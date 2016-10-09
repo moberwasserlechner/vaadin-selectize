@@ -1,0 +1,30 @@
+@import "../valo/valo.scss";
+
+$v-app-loading-text: "Vaadin Selectize.js Addon";
+
+@mixin chartjs {
+  @include valo;
+
+  /* Add your theme selectors here */
+  .v-app-loading:before {
+    background: none !important;
+    @include valo-spinner(50px, 2px, $v-focus-color, 1000ms);
+  }
+  
+  
+  .addon-menu {
+    background-color: white;
+  }
+  
+  .addon-info-bar {
+    padding: 5px;
+    background-color: white;
+    border-bottom: 1px solid darken($v-background-color, 50%);
+  }
+  
+  .addon-code {
+    //overflow: auto;
+    background-color: white;
+  }
+  
+}
