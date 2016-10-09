@@ -5,7 +5,8 @@ Vaadin 7 wrapper for the Selectize.js jquery plugin. https://github.com/selectiz
 ## Features
 
 * On the fly jquery detection and inclusion if missing
-* Add
+* 4 out of the box themes
+* ...
 
 
 ## Demo
@@ -75,76 +76,17 @@ Dependency
     }
 ## Usage
 
-The basic usage is always the same. You need to create a new ChartJs() and configure it with a chart type specific config.
-
 For more examples please see the demo app at http://moberwasserlechner.jelastic.servint.net/vaadin-selectize/
 
+
+
 ```
-        ChartJs myChart = new ChartJs(config);
-        // enable logging to the javascript console. You can see some interessenting things there ;). Please do not use this in production because it's only needed for debugging.
-        myChart.setJsLoggingEnabled(true);
-        myChart.setWidth(50, Unit.PERCENTAGE);
-        // add a data point clicklistener
-        myChart.addClickListener((datasetIdx, dataIdx) -> {
-            BarDataset dataset = (BarDataset) barConfig.data().getDatasets().get(datasetIdx);
-            Notification.show("BarDataset at idx:" + datasetIdx + "; Data: idx=" + dataIdx + "; Value=" + dataset.getData().get(dataIdx), Type.WARNING_MESSAGE);
-        });
+TODO
 ```
 
-### Bar chart configuration
+### Options
 
-In this example we configure a horizontal bar chart with 3 dataset and add some random numbers to each of them.
-
-```java
-        
-        BarChartConfig config = new BarChartConfig();
-        config
-            .data()
-                .labels("January", "February", "March", "April", "May", "June", "July")
-                .addDataset(new BarDataset().type().label("Dataset 1").backgroundColor("rgba(151,187,205,0.5)").borderColor("white").borderWidth(2))
-                .addDataset(new LineDataset().type().label("Dataset 2").backgroundColor("rgba(151,187,205,0.5)").borderColor("white").borderWidth(2))
-                .addDataset(new BarDataset().type().label("Dataset 3").backgroundColor("rgba(220,220,220,0.5)"))
-                .and();
-        
-        config.
-            options()
-                .responsive(true)
-                .title()
-                    .display(true)
-                    .position(Position.LEFT)
-                    .text("Chart.js Combo Bar Line Chart")
-                    .and()
-               .done();
-        
-        List<String> labels = config.data().getLabels();
-        for (Dataset<?, ?> ds : config.data().getDatasets()) {
-            List<Double> data = new ArrayList<>();
-            for (int i = 0; i < labels.size(); i++) {
-                data.add((double) (Math.random() > 0.5 ? 1.0 : -1.0) * Math.round(Math.random() * 100));
-            }
-            
-            if (ds instanceof BarDataset) {
-                BarDataset bds = (BarDataset) ds;
-                bds.dataAsList(data);    
-            }
-                
-            if (ds instanceof LineDataset) {
-                LineDataset lds = (LineDataset) ds;
-                lds.dataAsList(data);    
-            }
-        }
-        
-        ChartJs chart = new ChartJs(config);
-        chart.setJsLoggingEnabled(true);
-
-        return chart; 
-```
-
-### Chart Options
-
-Please have a look at the great documentation at ChartJs. (http://www.chartjs.org/docs)
-
-You will see that every fluent api method under `config.options()` has a counterpart in the javascript json config.  
+You will see that every fluent api method under `selectize.config()` has a counterpart in the javascript json config. The javadoc is basically the description of those options.
 
 ## Prerequisite
 
