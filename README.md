@@ -1,4 +1,4 @@
-# Vaadin Selectize.js [![Bintray](https://img.shields.io/bintray/v/moberwasserlechner/maven/vaadin-selectize.svg)](https://bintray.com/moberwasserlechner/maven/vaadin-selectize/_latestVersion) [![PayPal](https://img.shields.io/badge/%24-donate-0CB3EB.svg)](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=N8VS2P9233NJQ) [![License](https://img.shields.io/badge/license-MIT-B34ED4.svg)](https://github.com/moberwasserlechner/vaadin-selectize/blob/master/LICENSE)
+# Vaadin Selectize.js [![Bintray](https://img.shields.io/bintray/v/moberwasserlechner/maven/vaadin-selectize.svg)](https://bintray.com/moberwasserlechner/maven/vaadin-selectize/_latestVersion) [![PayPal](https://img.shields.io/badge/%24-donate-0CB3EB.svg)](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=N8VS2P9233NJQ) [![License](https://img.shields.io/badge/license-Apache-2.0-B34ED4.svg)](https://github.com/moberwasserlechner/vaadin-selectize/blob/master/LICENSE)
 
 Vaadin 7 wrapper for the Selectize.js jquery plugin. https://github.com/selectize/selectize.js
 
