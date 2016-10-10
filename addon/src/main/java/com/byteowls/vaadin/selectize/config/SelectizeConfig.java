@@ -1,15 +1,19 @@
 package com.byteowls.vaadin.selectize.config;
 
 import java.io.Serializable;
+import java.lang.reflect.Field;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import com.byteowls.vaadin.selectize.config.annotation.SelectizeOption;
 import com.byteowls.vaadin.selectize.utils.JUtils;
 import com.byteowls.vaadin.selectize.utils.JsonBuilder;
 
 import elemental.json.Json;
+import elemental.json.JsonArray;
 import elemental.json.JsonObject;
 
 public class SelectizeConfig implements JsonBuilder {
@@ -17,13 +21,14 @@ public class SelectizeConfig implements JsonBuilder {
     public enum SearchConjunction {
         AND, OR;
     }
-    
+
     public enum Plugin {
         REMOVE_BUTTON, DROPDOWN_HEADER, OPTGROUP_COLUMNS, RESTORE_ON_BACKSPACE, DRAG_DROP;
     }
 
-    private List<?> options;
+    private List<Object> options;
     private List<?> items;
+
     // general
     private String delimiter;
     private Boolean create;
@@ -34,6 +39,7 @@ public class SelectizeConfig implements JsonBuilder {
     private Boolean openOnFocus;
     private Integer maxOptions;
     private Integer maxItems;
+    private boolean infiniteItems;
     private Boolean hideSelected;
     private Boolean closeAfterSelect;
     private Boolean allowEmptyOption;
@@ -61,17 +67,35 @@ public class SelectizeConfig implements JsonBuilder {
     private Boolean lockOptgroupOrder;
     private Boolean copyClassesToDropdown;
     private Set<String> plugins;
-    
+
     /**
      * An array of the initial options available to select; array of objects.
      * @param options
      * @return
      */
-    public SelectizeConfig options(List<?> options) {
+    public SelectizeConfig options(List<Object> options) {
         this.options = options;
         return this;
     }
-    
+
+    public SelectizeConfig option(Object option) {
+        if (option != null) {
+            if (this.options == null) {
+                this.options = new ArrayList<>();
+            }
+            this.options.add(option);
+        }
+        return this;
+    }
+
+    public SelectizeConfig option(Object optionValue, String optionLabel) {
+        if (this.options == null) {
+            this.options = new ArrayList<>();
+        }
+        this.options.add(new BasicOption(optionValue, optionLabel));
+        return this;
+    }
+
     /**
      * An array of the initial selected values.
      * @param items
@@ -97,7 +121,7 @@ public class SelectizeConfig implements JsonBuilder {
         this.delimiter = delimiter;
         return this;
     }
-    
+
     /**
      *  Allows the user to create new items that aren't in the initial list of options. Defaults to false.
      * @param create
@@ -117,7 +141,7 @@ public class SelectizeConfig implements JsonBuilder {
         this.createOnBlur = createOnBlur;
         return this;
     }
-    
+
     /**
      * Specifies a RegExp or a string containing a regular expression that the current search filter must match to be allowed to be created.
      * @param highlight
@@ -140,6 +164,16 @@ public class SelectizeConfig implements JsonBuilder {
 
     /**
      * If false, items created by the user will not show up as available options once they are unselected. Defaults to true.
+     * @param persist
+     * @return This for chaining.
+     */
+    public SelectizeConfig persist(boolean persist) {
+        this.persist = persist;
+        return this;
+    }
+
+    /**
+     * Show the dropdown immediately when the control receives focus. Defaults to true.
      * @param openOnFocus
      * @return This for chaining.
      */
@@ -165,6 +199,11 @@ public class SelectizeConfig implements JsonBuilder {
      */
     public SelectizeConfig maxItems(int maxItems) {
         this.maxItems = maxItems;
+        return this;
+    }
+
+    public SelectizeConfig infiniteItems(boolean infiniteItems) {
+        this.infiniteItems = infiniteItems;
         return this;
     }
 
@@ -402,7 +441,7 @@ public class SelectizeConfig implements JsonBuilder {
         this.copyClassesToDropdown = copyClassesToDropdown;
         return this;
     }
-    
+
     public SelectizeConfig plugins(Plugin... plugins) {
         if (this.plugins == null) {
             this.plugins = new HashSet<>();
@@ -413,9 +452,68 @@ public class SelectizeConfig implements JsonBuilder {
         return this;
     }
 
+    public List<Object> getOptions() {
+        return this.options;
+    }
+
+    public JsonArray getOptionsJson() {
+        JsonArray arr = Json.createArray();
+        if (this.options != null) {
+            List<Field> fields = new ArrayList<>();
+            SelectizeOption classAnnotation = null;
+            for (Object o : this.options) {
+                if (fields.isEmpty()) {
+                    Class<?> i = o.getClass();
+                    classAnnotation = i.getAnnotation(SelectizeOption.class);
+                    while (i != null && i != Object.class) {
+                        for (Field field : i.getDeclaredFields()) {
+                            if (!field.isSynthetic()) {
+                                fields.add(field);
+                            }
+                        }
+                        i = i.getSuperclass();
+                    }
+                }
+
+                JsonObject optionObj = Json.createObject();
+                for (Field f : fields) {
+                    boolean accessible = f.isAccessible();
+                    if (!accessible) {
+                        f.setAccessible(true);
+                    }
+                    try {
+                        Object value = f.get(o);
+                        if (value != null) {
+                            if (value instanceof Number) {
+                                Number n = (Number) value;
+                                optionObj.put(f.getName(), n.doubleValue());
+                            } else if (value instanceof String) {
+                                optionObj.put(f.getName(), (String) value);
+                            } else if (value instanceof Boolean) {
+                                optionObj.put(f.getName(), (Boolean) value);
+                            }
+                        }
+                    } catch (IllegalArgumentException | IllegalAccessException e) {
+                        e.printStackTrace();
+                    }
+                    if (!accessible) {
+                        f.setAccessible(true);
+                    }
+                }
+                arr.set(arr.length(), optionObj);
+            }
+        }
+        return arr;
+    }
+
     @Override
     public JsonObject buildJson() {
         JsonObject map = Json.createObject();
+        JsonArray optionsArray = getOptionsJson();
+        if (optionsArray != null) {
+            map.put("options", optionsArray);
+        }
+
         JUtils.putNotNull(map, "delimiter", delimiter);
         JUtils.putNotNull(map, "create", create);
         // TODO create callback
@@ -425,6 +523,9 @@ public class SelectizeConfig implements JsonBuilder {
         JUtils.putNotNull(map, "persist", persist);
         JUtils.putNotNull(map, "openOnFocus", openOnFocus);
         JUtils.putNotNull(map, "maxOptions", maxOptions);
+        if (infiniteItems) {
+            map.put("maxItems", Json.createNull());
+        }
         JUtils.putNotNull(map, "maxItems", maxItems);
         JUtils.putNotNull(map, "hideSelected", hideSelected);
         JUtils.putNotNull(map, "closeAfterSelect", closeAfterSelect);

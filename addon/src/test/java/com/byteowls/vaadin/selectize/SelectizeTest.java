@@ -1,12 +1,11 @@
 package com.byteowls.vaadin.selectize;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import org.junit.Assert;
 import org.junit.Test;
 
-import elemental.json.JsonValue;
+import com.byteowls.vaadin.selectize.config.SelectizeConfig;
+
+import elemental.json.JsonArray;
 
 /**
  * @author michael@byteowls.com
@@ -14,17 +13,18 @@ import elemental.json.JsonValue;
 public class SelectizeTest {
 
     @Test
-    public void testConfigGeneral() {
-        List<?> options = new ArrayList<>();
-        
-        Selectize s = new Selectize();
-        s.config()
-            .create(true)
-            .options(options);
+    public void testBeanConvertion() {
+        Selectize selectize = new Selectize();
+        selectize.setMultiple(true);
+        SelectizeConfig selectizeConfig = selectize
+            .config()
+                .persist(false)
+                .maxItems(-1)
+                    .option(new Address("Test", 9000, "Klagenfurt", "AT"));
 
-
-        JsonValue jsonValue = s.getState().configurationJson;
-        Assert.assertNotNull(jsonValue);
+        JsonArray optionsJson = selectizeConfig.getOptionsJson();
+        String json = optionsJson.toJson();
+        Assert.assertEquals("[{\"street\":\"Test\",\"postcode\":9000,\"city\":\"Klagenfurt\",\"country\":\"AT\"}]", json);
     }
 
 }
