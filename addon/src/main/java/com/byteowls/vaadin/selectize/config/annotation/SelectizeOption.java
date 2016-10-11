@@ -6,6 +6,12 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
+/**
+ * 
+ * Configuring
+ * @author michaelowl@gmail.com
+ *
+ */
 @Target(TYPE)
 @Retention(RetentionPolicy.SOURCE)
 public @interface SelectizeOption {

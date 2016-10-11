@@ -28,6 +28,7 @@ public class SelectizeConfig implements JsonBuilder {
 
     private List<Object> options;
     private List<?> items;
+    private boolean useOnlyConfiguredFields;
 
     // general
     private String delimiter;
@@ -69,25 +70,36 @@ public class SelectizeConfig implements JsonBuilder {
     private Set<String> plugins;
 
     /**
-     * An array of the initial options available to select; array of objects.
+     * An array of the initial options beans available.
      * @param options
      * @return
      */
-    public SelectizeConfig options(List<Object> options) {
-        this.options = options;
+    public SelectizeConfig options(List<Object> optionBeans) {
+        this.options = optionBeans;
         return this;
     }
 
-    public SelectizeConfig option(Object option) {
-        if (option != null) {
+    /**
+     * Add a option bean to the list of initial available options.
+     * @param optionBean
+     * @return
+     */
+    public SelectizeConfig option(Object optionBean) {
+        if (optionBean != null) {
             if (this.options == null) {
                 this.options = new ArrayList<>();
             }
-            this.options.add(option);
+            this.options.add(optionBean);
         }
         return this;
     }
 
+    /**
+     * Make sure to not use this method if you actually want to use java beans
+     * @param optionValue
+     * @param optionLabel
+     * @return
+     */
     public SelectizeConfig option(Object optionValue, String optionLabel) {
         if (this.options == null) {
             this.options = new ArrayList<>();
@@ -95,11 +107,21 @@ public class SelectizeConfig implements JsonBuilder {
         this.options.add(new BasicOption(optionValue, optionLabel));
         return this;
     }
+    
+    /**
+     * If true only bean members defined in the field methods are provided to the client side.
+     * @param useOnlyConfiguredFields
+     * @return This for chaining.
+     */
+    public SelectizeConfig useOnlyConfiguredFields(boolean useOnlyConfiguredFields) {
+        this.useOnlyConfiguredFields = useOnlyConfiguredFields;
+        return this;
+    }
 
     /**
      * An array of the initial selected values.
      * @param items
-     * @return
+     * @return This for chaining.
      */
     public SelectizeConfig items(List<?> items) {
         this.items = items;
@@ -455,11 +477,36 @@ public class SelectizeConfig implements JsonBuilder {
     public List<Object> getOptions() {
         return this.options;
     }
+    
+    private void addNotNull(Set<String> set, String value) {
+        if (value != null) {
+            set.add(value);
+        }
+    }
 
     public JsonArray getOptionsJson() {
         JsonArray arr = Json.createArray();
         if (this.options != null) {
             List<Field> fields = new ArrayList<>();
+            Set<String> constrainToFields = new HashSet<>();
+            if (this.useOnlyConfiguredFields) {
+                addNotNull(constrainToFields, this.labelField);
+                addNotNull(constrainToFields, this.optgroupField);
+                addNotNull(constrainToFields, this.optgroupLabelField);
+                addNotNull(constrainToFields, this.optgroupValueField);
+                addNotNull(constrainToFields, this.valueField);
+                if (this.searchField != null) {
+                    for (String s : searchField) {
+                        addNotNull(constrainToFields, s);
+                    }
+                }
+                if (this.sortField != null) {
+                    for (String s : sortField) {
+                        addNotNull(constrainToFields, s);
+                    }
+                }
+            }
+            
             SelectizeOption classAnnotation = null;
             for (Object o : this.options) {
                 if (fields.isEmpty()) {
@@ -467,7 +514,7 @@ public class SelectizeConfig implements JsonBuilder {
                     classAnnotation = i.getAnnotation(SelectizeOption.class);
                     while (i != null && i != Object.class) {
                         for (Field field : i.getDeclaredFields()) {
-                            if (!field.isSynthetic()) {
+                            if (!field.isSynthetic() && (constrainToFields.contains(field.getName()) || !this.useOnlyConfiguredFields)) {
                                 fields.add(field);
                             }
                         }
