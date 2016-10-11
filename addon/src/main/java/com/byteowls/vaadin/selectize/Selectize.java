@@ -63,7 +63,7 @@ public class Selectize extends AbstractJavaScriptComponent {
     }
 
     private void addJsFunctions() {
-        // this function can be called in chartjs-connector e.g. self.onDataPointClick(datasetIndex, dataIndex)
+        // this function can be called in connector.js e.g. self.onDataPointClick(datasetIndex, dataIndex)
         addFunction("TODO add function", new JavaScriptFunction() {
 
             private static final long serialVersionUID = -7865596041611535165L;
