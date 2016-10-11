@@ -135,6 +135,7 @@ public class SelectizeConfig implements JsonBuilder {
      * The delimiter is also used in the getValue API call on a text <input> tag to separate the multiple values.
      * 
      * Defaults to semicolon.
+     * @param delimiter
      * @return This for chaining.
      */
     public SelectizeConfig delimiter(String delimiter) {
@@ -143,7 +144,8 @@ public class SelectizeConfig implements JsonBuilder {
     }
 
     /**
-     *  Allows the user to create new items that aren't in the initial list of options. Defaults to false.
+     * Allows the user to create new items that aren't in the initial list of options. Defaults to false.
+     * @param create
      * @return This for chaining.
      */
     public SelectizeConfig create(boolean create) {
@@ -153,6 +155,7 @@ public class SelectizeConfig implements JsonBuilder {
 
     /**
      * If true, when user exits the field (clicks outside of input), a new option is created and selected (if create setting is enabled). Defaults to false.
+     * @param createOnBlur
      * @return This for chaining.
      */
     public SelectizeConfig createOnBlur(boolean createOnBlur) {
@@ -162,7 +165,7 @@ public class SelectizeConfig implements JsonBuilder {
 
     /**
      * Specifies a RegExp or a string containing a regular expression that the current search filter must match to be allowed to be created.
-     * @param highlight
+     * @param createFilter
      * @return This for chaining.
      */
     public SelectizeConfig createFilter(String createFilter) {
@@ -220,6 +223,11 @@ public class SelectizeConfig implements JsonBuilder {
         return this;
     }
 
+    /**
+     * If true the maxItems parameters is set to infinite.
+     * @param infiniteItems
+     * @return This for chaining.
+     */
     public SelectizeConfig infiniteItems(boolean infiniteItems) {
         this.infiniteItems = infiniteItems;
         return this;
@@ -271,7 +279,7 @@ public class SelectizeConfig implements JsonBuilder {
      * The number of milliseconds to wait before requesting options from the server or null. If null, throttling is disabled. 
      * 
      * Useful when loading options dynamically while the user types a search / filter expression. Defaults to 300.
-     * @param closeAfterSelect
+     * @param loadThrottle
      * @return This for chaining.
      */
     public SelectizeConfig loadThrottle(int loadThrottle) {
@@ -352,7 +360,7 @@ public class SelectizeConfig implements JsonBuilder {
 
     /**
      * Enable or disable international character support. Defaults to true.
-     * @param selectOnTab
+     * @param diacritics
      * @return This for chaining.
      */
     public SelectizeConfig diacritics(boolean diacritics) {
@@ -420,6 +428,11 @@ public class SelectizeConfig implements JsonBuilder {
         return this;
     }
 
+    /**
+     * TODO direction missing
+     * @param sortField
+     * @return
+     */
     public SelectizeConfig sortField(String...  sortField) {
         this.sortField = Arrays.asList(sortField);
         return this;
