@@ -71,8 +71,8 @@ public class SelectizeConfig implements JsonBuilder {
 
     /**
      * An array of the initial options beans available.
-     * @param options
-     * @return
+     * @param options a list of option beans
+     * @return This for chaining.
      */
     public SelectizeConfig options(List<Object> optionBeans) {
         this.options = optionBeans;
@@ -82,7 +82,7 @@ public class SelectizeConfig implements JsonBuilder {
     /**
      * Add a option bean to the list of initial available options.
      * @param optionBean
-     * @return
+     * @return This for chaining.
      */
     public SelectizeConfig option(Object optionBean) {
         if (optionBean != null) {
@@ -96,9 +96,9 @@ public class SelectizeConfig implements JsonBuilder {
 
     /**
      * Make sure to not use this method if you actually want to use java beans
-     * @param optionValue
-     * @param optionLabel
-     * @return
+     * @param optionValue the option's value
+     * @param optionLabel the option's label text 
+     * @return This for chaining.
      */
     public SelectizeConfig option(Object optionValue, String optionLabel) {
         if (this.options == null) {
@@ -110,7 +110,6 @@ public class SelectizeConfig implements JsonBuilder {
     
     /**
      * If true only bean members defined in the field methods are provided to the client side.
-     * @param useOnlyConfiguredFields
      * @return This for chaining.
      */
     public SelectizeConfig useOnlyConfiguredFields(boolean useOnlyConfiguredFields) {
@@ -135,8 +134,7 @@ public class SelectizeConfig implements JsonBuilder {
      * 
      * The delimiter is also used in the getValue API call on a text <input> tag to separate the multiple values.
      * 
-     * Default: ,
-     * @param delimiter
+     * Defaults to semicolon.
      * @return This for chaining.
      */
     public SelectizeConfig delimiter(String delimiter) {
@@ -146,7 +144,6 @@ public class SelectizeConfig implements JsonBuilder {
 
     /**
      *  Allows the user to create new items that aren't in the initial list of options. Defaults to false.
-     * @param create
      * @return This for chaining.
      */
     public SelectizeConfig create(boolean create) {
@@ -156,7 +153,6 @@ public class SelectizeConfig implements JsonBuilder {
 
     /**
      * If true, when user exits the field (clicks outside of input), a new option is created and selected (if create setting is enabled). Defaults to false.
-     * @param highlight
      * @return This for chaining.
      */
     public SelectizeConfig createOnBlur(boolean createOnBlur) {

@@ -15,12 +15,16 @@ public class Selectize extends AbstractJavaScriptComponent {
     private SelectizeConfig config;
 
     /**
-     * Construct a Selectize. Be aware that you have to set a {@link ChartConfig} as well. Use {@link #configure(ChartConfig)} to do so.
+     * Construct a Selectize.
      */
     public Selectize() {
         addJsFunctions();
     }
     
+    /**
+     * Creates a multiselect select element 
+     * @param multiple
+     */
     public void setMultiple(boolean multiple) {
         getState().multiple = multiple;
     }
