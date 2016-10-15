@@ -50,8 +50,4 @@ public class Contact {
         this.email = email;
     }
 
-    public String getLabel() {
-        return firstname + " " + lastname;
-    }
-
 }

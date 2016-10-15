@@ -9,7 +9,7 @@ public class SelectizeField<T> extends CustomField<T> {
     
     private static final long serialVersionUID = -2787759838519415740L;
     
-    private Selectize selectize;
+    private Selectize<T> selectize;
     
     public SelectizeField() {
         super();
@@ -19,9 +19,9 @@ public class SelectizeField<T> extends CustomField<T> {
         setCaption(caption);
     }
     
-    public SelectizeConfig config() {
+    public SelectizeConfig<T> config() {
         if (this.selectize == null) {
-            this.selectize = new Selectize();
+            this.selectize = new Selectize<>();
         }
         return this.selectize.config();
     }

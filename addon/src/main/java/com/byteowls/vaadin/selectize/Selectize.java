@@ -7,12 +7,12 @@ import com.vaadin.ui.JavaScriptFunction;
 
 import elemental.json.JsonArray;
 
-@JavaScript({"vaadin://selectize/selectize.min.js", "vaadin://selectize/selectize-connector.js"})
-public class Selectize extends AbstractJavaScriptComponent {
+@JavaScript({"vaadin://selectize/selectize-connector.js"})
+public class Selectize<T> extends AbstractJavaScriptComponent {
 
     private static final long serialVersionUID = -4371120535603078616L;
 
-    private SelectizeConfig config;
+    private SelectizeConfig<T> config;
 
     /**
      * Construct a Selectize.
@@ -22,19 +22,11 @@ public class Selectize extends AbstractJavaScriptComponent {
     }
     
     /**
-     * Creates a multiselect select element 
-     * @param multiple
-     */
-    public void setMultiple(boolean multiple) {
-        getState().multiple = multiple;
-    }
-    
-    /**
      * @return configure the selectize component.
      */
-    public SelectizeConfig config() {
+    public SelectizeConfig<T> config() {
         if (this.config == null) {
-            this.config = new SelectizeConfig();
+            this.config = new SelectizeConfig<>();
         }
         return this.config;
     }

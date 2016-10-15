@@ -10,6 +10,5 @@ public interface AddonView extends View {
     String getSource();
     
     String getViewName();
-    
 
 }

@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 
 import com.byteowls.vaadin.selectize.demo.ui.views.AddonView;
+import com.byteowls.vaadin.selectize.demo.ui.views.contacts.SingleContactView;
 import com.vaadin.annotations.Theme;
 import com.vaadin.data.Item;
 import com.vaadin.data.util.HierarchicalContainer;
@@ -30,7 +31,6 @@ import com.vaadin.ui.Panel;
 import com.vaadin.ui.Tree;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
-import com.vaadin.ui.VerticalSplitPanel;
 import com.vaadin.ui.themes.ValoTheme;
 
 import de.java2html.converter.JavaSource2HTMLConverter;
@@ -39,7 +39,7 @@ import de.java2html.javasource.JavaSourceParser;
 import de.java2html.options.JavaSourceConversionOptions;
 import de.java2html.util.IllegalConfigurationException;
 
-@Theme("mediumeditor")
+@Theme("selectize")
 @SpringUI
 public class AddonDemoUI extends UI {
 
@@ -51,7 +51,7 @@ public class AddonDemoUI extends UI {
     private static List<MenuItem> menuItems;
     static {
         menuItems = new ArrayList<>();
-//        menuItems.add(new MenuItem(EditorStructure.SIMPLE, "Start", NoConfigEditorView.class));
+        menuItems.add(new MenuItem(EditorStructure.SINGLE, "Single", SingleContactView.class));
     }
 
     @Autowired
@@ -60,7 +60,6 @@ public class AddonDemoUI extends UI {
     private Environment env;
     
     private Label codeLabel;
-    private Label previewLabel;
     private Panel editorComponent;
     
     private Navigator navigator;
@@ -111,7 +110,6 @@ public class AddonDemoUI extends UI {
                 AddonView view = (AddonView) event.getNewView();
                 String formattedSourceCode = getFormattedSourceCode(view.getSource());
                 codeLabel.setValue(formattedSourceCode);
-                previewLabel.setValue(null);
                 return true;
             }
 
@@ -130,31 +128,10 @@ public class AddonDemoUI extends UI {
     }
 
     private Component buildContent() {
-        VerticalLayout layout = new VerticalLayout();
         editorComponent = new Panel();
         editorComponent.setSizeFull();
         editorComponent.addStyleName(ValoTheme.PANEL_BORDERLESS);
-        
-        layout.addComponent(editorComponent);
-        layout.setExpandRatio(editorComponent, 1);
-        
-        VerticalSplitPanel contentLayout = new VerticalSplitPanel();
-        contentLayout.setFirstComponent(layout);
-        contentLayout.setSecondComponent(buildPreview());
-        contentLayout.setSplitPosition(75);
-
-        return contentLayout;
-    }
-    
-    private Component buildPreview() {
-        previewLabel = new Label();
-        
-        Panel panel = new Panel(previewLabel);
-        panel.setCaption("Preview");
-        panel.setSizeFull();
-        panel.addStyleName(ValoTheme.PANEL_BORDERLESS);
-        panel.addStyleName("addon-code");
-        return panel;
+        return editorComponent;
     }
     
     private Component buildCode() {
@@ -195,7 +172,7 @@ public class AddonDemoUI extends UI {
             }
 
             Item item = treeContainer.addItem(editorStructure);
-            item.getItemProperty(CAPTION_PROPERTY).setValue(editorStructure.toString() + " Editor");
+            item.getItemProperty(CAPTION_PROPERTY).setValue(editorStructure.toString());
             item.getItemProperty(ICON_PROPERTY).setValue(editorStructure.getIcon());
             treeContainer.setChildrenAllowed(editorStructure, !children.isEmpty());
 

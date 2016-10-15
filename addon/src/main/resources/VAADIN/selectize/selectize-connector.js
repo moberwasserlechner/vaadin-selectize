@@ -37,9 +37,11 @@ window.com_byteowls_vaadin_selectize_Selectize = function() {
 		// detect jquery 1.7+
 		if (typeof jQuery == 'undefined') {
 			var jqueryUrl = this.translateVaadinUri("vaadin://selectize/jquery.min.js");
-			this.loadScript(jqueryUrl, this.initComponent(state));
+			this.loadScript(jqueryUrl, (function() {
+				self.initComponent(state);
+			}));
 		} else {
-			this.initComponent(state);
+			self.initComponent(state);
 		}
 	};
 	
@@ -47,42 +49,38 @@ window.com_byteowls_vaadin_selectize_Selectize = function() {
 	 * 
 	 */
 	this.initComponent = function(state) {
-		loggingEnabled = state.loggingEnabled;
-		
-		if (loggingEnabled) {
-			console.log("selectize: configuration is\n", JSON.stringify(state.configurationJson, null, 2));
-		}
-		
-		if (typeof selectize === 'undefined' && state.configurationJson !== 'undefined') {
-			selectize = $("<select>").appendTo(e).selectize(state.configurationJson);
-		}
+		var selectizeUrl = this.translateVaadinUri("vaadin://selectize/selectize.min.js");
+		this.loadScript(selectizeUrl, (function() {
+			loggingEnabled = state.loggingEnabled;
+			if (loggingEnabled) {
+				console.log("selectize: configuration is\n", JSON.stringify(state.configurationJson, null, 2));
+			}
+			
+			if (typeof selectize === 'undefined' && state.configurationJson !== 'undefined') {
+				selectize = $("<select>").appendTo(e).selectize(state.configurationJson);
+			}
+		}));
 	}
-
-	/**
-	 * 
-	 */
-	this.loadScript = function(url, callback) {
-        var script = document.createElement("script")
-        script.type = "text/javascript";
-
-        if (script.readyState) { //IE
-            script.onreadystatechange = function () {
-                if (script.readyState == "loaded" || script.readyState == "complete") {
-                    script.onreadystatechange = null;
-                    callback();
-                }
-            };
-        } else { //Others
-            script.onload = function () {
-                callback();
-            };
-        }
-
-        script.src = url;
-        
-        var headElement = document.getElementsByTagName("head")[0];
-        headElement.insertBefore(script, headElement.firstChild);
-    };
-
+	
+	//this function will work cross-browser for loading scripts asynchronously
+	this.loadScript = function(src, callback) {
+		var r = false;
+		var s = document.createElement('script');
+		s.type = 'text/javascript';
+		s.src = src;
+		s.onload = s.onreadystatechange = function() {
+			//console.log( this.readyState ); //uncomment this line to see which ready states are called.
+			if (!r && (!this.readyState || this.readyState == 'complete')) {
+				if (loggingEnabled) {
+					console.log("selectize: loading script: " + src);
+				}
+				r = true;
+				callback();
+			}
+		};
+		
+		var t = document.querySelector('script[src="'+this.translateVaadinUri("vaadin://selectize/selectize-connector.js")+'"]');
+		t.parentNode.insertBefore(s, t);
+	}
 
 };

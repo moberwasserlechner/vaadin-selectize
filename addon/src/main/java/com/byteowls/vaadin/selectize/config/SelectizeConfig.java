@@ -1,6 +1,5 @@
 package com.byteowls.vaadin.selectize.config;
 
-import java.io.Serializable;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -11,12 +10,13 @@ import java.util.Set;
 import com.byteowls.vaadin.selectize.config.annotation.SelectizeOption;
 import com.byteowls.vaadin.selectize.utils.JUtils;
 import com.byteowls.vaadin.selectize.utils.JsonBuilder;
+import com.byteowls.vaadin.selectize.utils.LabelGenerator;
 
 import elemental.json.Json;
 import elemental.json.JsonArray;
 import elemental.json.JsonObject;
 
-public class SelectizeConfig implements JsonBuilder {
+public class SelectizeConfig<T> implements JsonBuilder {
 
     public enum SearchConjunction {
         AND, OR;
@@ -26,8 +26,10 @@ public class SelectizeConfig implements JsonBuilder {
         REMOVE_BUTTON, DROPDOWN_HEADER, OPTGROUP_COLUMNS, RESTORE_ON_BACKSPACE, DRAG_DROP;
     }
 
-    private List<Object> options;
-    private List<?> items;
+    private List<T> options;
+    private LabelGenerator<T> optionLabelGenerator;
+    private String generatedLabelField;
+    private List<T> items;
     private boolean useOnlyConfiguredFields;
 
     // general
@@ -55,7 +57,8 @@ public class SelectizeConfig implements JsonBuilder {
     private Boolean selectOnTab;
     private Boolean diacritics;
     // data filter / search
-    private List<? extends Serializable> optgroups;
+    private List<T> optgroups;
+    private LabelGenerator<T> optgroupLabelGenerator;
     private String dataAttr;
     private String valueField;
     private String optgroupValueField;
@@ -74,7 +77,7 @@ public class SelectizeConfig implements JsonBuilder {
      * @param options a list of option beans
      * @return This for chaining.
      */
-    public SelectizeConfig options(List<Object> optionBeans) {
+    public SelectizeConfig<T> options(List<T> optionBeans) {
         this.options = optionBeans;
         return this;
     }
@@ -84,7 +87,7 @@ public class SelectizeConfig implements JsonBuilder {
      * @param optionBean
      * @return This for chaining.
      */
-    public SelectizeConfig option(Object optionBean) {
+    public SelectizeConfig<T> option(T optionBean) {
         if (optionBean != null) {
             if (this.options == null) {
                 this.options = new ArrayList<>();
@@ -95,24 +98,25 @@ public class SelectizeConfig implements JsonBuilder {
     }
 
     /**
-     * Make sure to not use this method if you actually want to use java beans
-     * @param optionValue the option's value
-     * @param optionLabel the option's label text 
+     * 
+     * @param optionLabelGenerator
      * @return This for chaining.
      */
-    public SelectizeConfig option(Object optionValue, String optionLabel) {
-        if (this.options == null) {
-            this.options = new ArrayList<>();
-        }
-        this.options.add(new BasicOption(optionValue, optionLabel));
+    public SelectizeConfig<T> optionLabelGenerator(LabelGenerator<T> optionLabelGenerator) {
+        this.optionLabelGenerator = optionLabelGenerator;
         return this;
     }
-    
+
+    public SelectizeConfig<T> generatedLabelField(String generatedLabelField) {
+        this.generatedLabelField = generatedLabelField;
+        return this;
+    }
+
     /**
      * If true only bean members defined in the field methods are provided to the client side.
      * @return This for chaining.
      */
-    public SelectizeConfig useOnlyConfiguredFields(boolean useOnlyConfiguredFields) {
+    public SelectizeConfig<T> useOnlyConfiguredFields(boolean useOnlyConfiguredFields) {
         this.useOnlyConfiguredFields = useOnlyConfiguredFields;
         return this;
     }
@@ -122,10 +126,25 @@ public class SelectizeConfig implements JsonBuilder {
      * @param items
      * @return This for chaining.
      */
-    public SelectizeConfig items(List<?> items) {
+    public SelectizeConfig<T> items(List<T> items) {
         this.items = items;
         return this;
-    } 
+    }
+
+    /**
+     * Add a item bean to the list of selected options.
+     * @param itemBean
+     * @return This for chaining.
+     */
+    public SelectizeConfig<T> item(T itemBean) {
+        if (itemBean != null) {
+            if (this.items == null) {
+                this.items = new ArrayList<>();
+            }
+            this.items.add(itemBean);
+        }
+        return this;
+    }
 
 
     /**
@@ -138,7 +157,7 @@ public class SelectizeConfig implements JsonBuilder {
      * @param delimiter
      * @return This for chaining.
      */
-    public SelectizeConfig delimiter(String delimiter) {
+    public SelectizeConfig<T> delimiter(String delimiter) {
         this.delimiter = delimiter;
         return this;
     }
@@ -148,7 +167,7 @@ public class SelectizeConfig implements JsonBuilder {
      * @param create
      * @return This for chaining.
      */
-    public SelectizeConfig create(boolean create) {
+    public SelectizeConfig<T> create(boolean create) {
         this.create = create;
         return this;
     }
@@ -158,7 +177,7 @@ public class SelectizeConfig implements JsonBuilder {
      * @param createOnBlur
      * @return This for chaining.
      */
-    public SelectizeConfig createOnBlur(boolean createOnBlur) {
+    public SelectizeConfig<T> createOnBlur(boolean createOnBlur) {
         this.createOnBlur = createOnBlur;
         return this;
     }
@@ -168,7 +187,7 @@ public class SelectizeConfig implements JsonBuilder {
      * @param createFilter
      * @return This for chaining.
      */
-    public SelectizeConfig createFilter(String createFilter) {
+    public SelectizeConfig<T> createFilter(String createFilter) {
         this.createFilter = createFilter;
         return this;
     }
@@ -178,7 +197,7 @@ public class SelectizeConfig implements JsonBuilder {
      * @param highlight
      * @return This for chaining.
      */
-    public SelectizeConfig highlight(boolean highlight) {
+    public SelectizeConfig<T> highlight(boolean highlight) {
         this.highlight = highlight;
         return this;
     }
@@ -188,7 +207,7 @@ public class SelectizeConfig implements JsonBuilder {
      * @param persist
      * @return This for chaining.
      */
-    public SelectizeConfig persist(boolean persist) {
+    public SelectizeConfig<T> persist(boolean persist) {
         this.persist = persist;
         return this;
     }
@@ -198,7 +217,7 @@ public class SelectizeConfig implements JsonBuilder {
      * @param openOnFocus
      * @return This for chaining.
      */
-    public SelectizeConfig openOnFocus(boolean openOnFocus) {
+    public SelectizeConfig<T> openOnFocus(boolean openOnFocus) {
         this.openOnFocus = openOnFocus;
         return this;
     }
@@ -208,7 +227,7 @@ public class SelectizeConfig implements JsonBuilder {
      * @param maxOptions
      * @return This for chaining.
      */
-    public SelectizeConfig maxOptions(int maxOptions) {
+    public SelectizeConfig<T> maxOptions(int maxOptions) {
         this.maxOptions = maxOptions;
         return this;
     }
@@ -218,7 +237,7 @@ public class SelectizeConfig implements JsonBuilder {
      * @param maxItems
      * @return This for chaining.
      */
-    public SelectizeConfig maxItems(int maxItems) {
+    public SelectizeConfig<T> maxItems(int maxItems) {
         this.maxItems = maxItems;
         return this;
     }
@@ -228,7 +247,7 @@ public class SelectizeConfig implements JsonBuilder {
      * @param infiniteItems
      * @return This for chaining.
      */
-    public SelectizeConfig infiniteItems(boolean infiniteItems) {
+    public SelectizeConfig<T> infiniteItems(boolean infiniteItems) {
         this.infiniteItems = infiniteItems;
         return this;
     }
@@ -238,7 +257,7 @@ public class SelectizeConfig implements JsonBuilder {
      * @param hideSelected
      * @return This for chaining.
      */
-    public SelectizeConfig hideSelected(boolean hideSelected) {
+    public SelectizeConfig<T> hideSelected(boolean hideSelected) {
         this.hideSelected = hideSelected;
         return this;
     }
@@ -248,7 +267,7 @@ public class SelectizeConfig implements JsonBuilder {
      * @param closeAfterSelect
      * @return This for chaining.
      */
-    public SelectizeConfig closeAfterSelect(boolean closeAfterSelect) {
+    public SelectizeConfig<T> closeAfterSelect(boolean closeAfterSelect) {
         this.closeAfterSelect = closeAfterSelect;
         return this;
     }
@@ -260,7 +279,7 @@ public class SelectizeConfig implements JsonBuilder {
      * @param allowEmptyOption
      * @return This for chaining.
      */
-    public SelectizeConfig allowEmptyOption(boolean allowEmptyOption) {
+    public SelectizeConfig<T> allowEmptyOption(boolean allowEmptyOption) {
         this.allowEmptyOption = allowEmptyOption;
         return this;
     }
@@ -270,7 +289,7 @@ public class SelectizeConfig implements JsonBuilder {
      * @param scrollDuration
      * @return This for chaining.
      */
-    public SelectizeConfig scrollDuration(int scrollDuration) {
+    public SelectizeConfig<T> scrollDuration(int scrollDuration) {
         this.scrollDuration = scrollDuration;
         return this;
     }
@@ -282,7 +301,7 @@ public class SelectizeConfig implements JsonBuilder {
      * @param loadThrottle
      * @return This for chaining.
      */
-    public SelectizeConfig loadThrottle(int loadThrottle) {
+    public SelectizeConfig<T> loadThrottle(int loadThrottle) {
         this.loadThrottle = loadThrottle;
         return this;
     }
@@ -292,7 +311,7 @@ public class SelectizeConfig implements JsonBuilder {
      * @param loadingClass
      * @return This for chaining.
      */
-    public SelectizeConfig loadingClass(String loadingClass) {
+    public SelectizeConfig<T> loadingClass(String loadingClass) {
         this.loadingClass = loadingClass;
         return this;
     }
@@ -302,7 +321,7 @@ public class SelectizeConfig implements JsonBuilder {
      * @param placeholder
      * @return This for chaining.
      */
-    public SelectizeConfig placeholder(String placeholder) {
+    public SelectizeConfig<T> placeholder(String placeholder) {
         this.placeholder = placeholder;
         return this;
     }
@@ -313,7 +332,7 @@ public class SelectizeConfig implements JsonBuilder {
      * @param preload
      * @return This for chaining.
      */
-    public SelectizeConfig preload(boolean preload) {
+    public SelectizeConfig<T> preload(boolean preload) {
         this.preload = preload;
         return this;
     }
@@ -323,7 +342,7 @@ public class SelectizeConfig implements JsonBuilder {
      * @param preloadOnFocus
      * @return This for chaining.
      */
-    public SelectizeConfig preloadOnFocus(boolean preloadOnFocus) {
+    public SelectizeConfig<T> preloadOnFocus(boolean preloadOnFocus) {
         this.preloadOnFocus = preloadOnFocus;
         return this;
     }
@@ -333,7 +352,7 @@ public class SelectizeConfig implements JsonBuilder {
      * @param dropdownParent
      * @return This for chaining.
      */
-    public SelectizeConfig dropdownParent(String dropdownParent) {
+    public SelectizeConfig<T> dropdownParent(String dropdownParent) {
         this.dropdownParent = dropdownParent;
         return this;
     }
@@ -343,7 +362,7 @@ public class SelectizeConfig implements JsonBuilder {
      * @param addPrecedence
      * @return This for chaining.
      */
-    public SelectizeConfig addPrecedence(boolean addPrecedence) {
+    public SelectizeConfig<T> addPrecedence(boolean addPrecedence) {
         this.addPrecedence = addPrecedence;
         return this;
     }
@@ -353,7 +372,7 @@ public class SelectizeConfig implements JsonBuilder {
      * @param selectOnTab
      * @return This for chaining.
      */
-    public SelectizeConfig selectOnTab(boolean selectOnTab) {
+    public SelectizeConfig<T> selectOnTab(boolean selectOnTab) {
         this.selectOnTab = selectOnTab;
         return this;
     }
@@ -363,17 +382,29 @@ public class SelectizeConfig implements JsonBuilder {
      * @param diacritics
      * @return This for chaining.
      */
-    public SelectizeConfig diacritics(boolean diacritics) {
+    public SelectizeConfig<T> diacritics(boolean diacritics) {
         this.diacritics = diacritics;
         return this;
     }
+
+    // TODO add optgroup
+
+    /**
+     * 
+     * @return This for chaining.
+     */
+    public SelectizeConfig<T> optgroupLabelGenerator(LabelGenerator<T> optgroupLabelGenerator) {
+        this.optgroupLabelGenerator = optgroupLabelGenerator;
+        return this;
+    }
+
 
     /**
      * The <option> attribute from which to read JSON data about the option. Defaults to 'data-data' 
      * @param dataAttr
      * @return This for chaining.
      */
-    public SelectizeConfig dataAttr(String dataAttr) {
+    public SelectizeConfig<T> dataAttr(String dataAttr) {
         this.dataAttr = dataAttr;
         return this;
     }
@@ -383,7 +414,7 @@ public class SelectizeConfig implements JsonBuilder {
      * @param valueField
      * @return This for chaining.
      */
-    public SelectizeConfig valueField(String valueField) {
+    public SelectizeConfig<T> valueField(String valueField) {
         this.valueField = valueField;
         return this;
     }
@@ -393,7 +424,7 @@ public class SelectizeConfig implements JsonBuilder {
      * @param optgroupValueField
      * @return This for chaining.
      */
-    public SelectizeConfig optgroupValueField(String optgroupValueField) {
+    public SelectizeConfig<T> optgroupValueField(String optgroupValueField) {
         this.optgroupValueField = optgroupValueField;
         return this;
     }
@@ -403,7 +434,7 @@ public class SelectizeConfig implements JsonBuilder {
      * @param labelField
      * @return This for chaining.
      */
-    public SelectizeConfig labelField(String labelField) {
+    public SelectizeConfig<T> labelField(String labelField) {
         this.labelField = labelField;
         return this;
     }
@@ -413,7 +444,7 @@ public class SelectizeConfig implements JsonBuilder {
      * @param optgroupLabelField
      * @return This for chaining.
      */
-    public SelectizeConfig optgroupLabelField(String optgroupLabelField) {
+    public SelectizeConfig<T> optgroupLabelField(String optgroupLabelField) {
         this.optgroupLabelField = optgroupLabelField;
         return this;
     }
@@ -423,7 +454,7 @@ public class SelectizeConfig implements JsonBuilder {
      * @param optgroupField
      * @return This for chaining.
      */
-    public SelectizeConfig optgroupField(String optgroupField) {
+    public SelectizeConfig<T> optgroupField(String optgroupField) {
         this.optgroupField = optgroupField;
         return this;
     }
@@ -433,7 +464,7 @@ public class SelectizeConfig implements JsonBuilder {
      * @param sortField
      * @return
      */
-    public SelectizeConfig sortField(String...  sortField) {
+    public SelectizeConfig<T> sortField(String...  sortField) {
         this.sortField = Arrays.asList(sortField);
         return this;
     }
@@ -443,7 +474,7 @@ public class SelectizeConfig implements JsonBuilder {
      * @param searchField
      * @return This for chaining.
      */
-    public SelectizeConfig searchField(String...  searchField) {
+    public SelectizeConfig<T> searchField(String...  searchField) {
         this.searchField = Arrays.asList(searchField);
         return this;
     }
@@ -453,12 +484,12 @@ public class SelectizeConfig implements JsonBuilder {
      * @param searchConjunction
      * @return This for chaining.
      */
-    public SelectizeConfig searchConjunction(SearchConjunction searchConjunction) {
+    public SelectizeConfig<T> searchConjunction(SearchConjunction searchConjunction) {
         this.searchConjunction = searchConjunction;
         return this;
     }
 
-    public SelectizeConfig lockOptgroupOrder(boolean lockOptgroupOrder) {
+    public SelectizeConfig<T> lockOptgroupOrder(boolean lockOptgroupOrder) {
         this.lockOptgroupOrder = lockOptgroupOrder;
         return this;
     }
@@ -468,12 +499,12 @@ public class SelectizeConfig implements JsonBuilder {
      * @param copyClassesToDropdown
      * @return This for chaining.
      */
-    public SelectizeConfig copyClassesToDropdown(boolean copyClassesToDropdown) {
+    public SelectizeConfig<T> copyClassesToDropdown(boolean copyClassesToDropdown) {
         this.copyClassesToDropdown = copyClassesToDropdown;
         return this;
     }
 
-    public SelectizeConfig plugins(Plugin... plugins) {
+    public SelectizeConfig<T> plugins(Plugin... plugins) {
         if (this.plugins == null) {
             this.plugins = new HashSet<>();
         }
@@ -483,14 +514,22 @@ public class SelectizeConfig implements JsonBuilder {
         return this;
     }
 
-    public List<Object> getOptions() {
+    public List<T> getOptions() {
         return this.options;
     }
-    
+
     private void addNotNull(Set<String> set, String value) {
         if (value != null) {
             set.add(value);
         }
+    }
+    
+    public JsonArray getItemsJson() {
+        JsonArray arr = Json.createArray();
+        if (this.items != null) {
+            
+        }
+        return arr;
     }
 
     public JsonArray getOptionsJson() {
@@ -515,9 +554,9 @@ public class SelectizeConfig implements JsonBuilder {
                     }
                 }
             }
-            
+
             SelectizeOption classAnnotation = null;
-            for (Object o : this.options) {
+            for (T o : this.options) {
                 if (fields.isEmpty()) {
                     Class<?> i = o.getClass();
                     classAnnotation = i.getAnnotation(SelectizeOption.class);
@@ -556,6 +595,16 @@ public class SelectizeConfig implements JsonBuilder {
                         f.setAccessible(true);
                     }
                 }
+
+                if (optionLabelGenerator != null) {
+                    String label = optionLabelGenerator.getLabel(o);
+                    String name = "label";
+                    if (generatedLabelField != null) {
+                        name = generatedLabelField;
+                    }
+                    optionObj.put(name, label);
+                }
+
                 arr.set(arr.length(), optionObj);
             }
         }
@@ -565,11 +614,6 @@ public class SelectizeConfig implements JsonBuilder {
     @Override
     public JsonObject buildJson() {
         JsonObject map = Json.createObject();
-        JsonArray optionsArray = getOptionsJson();
-        if (optionsArray != null) {
-            map.put("options", optionsArray);
-        }
-
         JUtils.putNotNull(map, "delimiter", delimiter);
         JUtils.putNotNull(map, "create", create);
         // TODO create callback
@@ -615,6 +659,15 @@ public class SelectizeConfig implements JsonBuilder {
         JUtils.putNotNull(map, "copyClassesToDropdown", copyClassesToDropdown);
         // plugins
         JUtils.putNotNull(map, "plugins", plugins);
+        // options
+        JsonArray optionsArray = getOptionsJson();
+        if (optionsArray != null) {
+            map.put("options", optionsArray);
+        }
+        JsonArray itemsArray = getItemsJson();
+        if (itemsArray != null) {
+            map.put("items", itemsArray);
+        }
         // render
         return map;
     }
