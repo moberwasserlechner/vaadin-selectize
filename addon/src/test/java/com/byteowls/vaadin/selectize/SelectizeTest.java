@@ -65,7 +65,7 @@ public class SelectizeTest {
 
         JsonArray optionsJson = selectizeConfig.getOptionsJson();
         String json = optionsJson.toJson();
-        Assert.assertEquals("[{\"id\":42,\"label\":\"9000 Klagenfurt\"}]", json);
+        Assert.assertEquals("[{\"id\":42,\"text\":\"9000 Klagenfurt\"}]", json);
     }
 
     @Test

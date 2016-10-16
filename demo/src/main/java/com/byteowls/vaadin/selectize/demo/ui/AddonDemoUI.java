@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 
 import com.byteowls.vaadin.selectize.demo.ui.views.AddonView;
+import com.byteowls.vaadin.selectize.demo.ui.views.contacts.MultipleCountryView;
 import com.byteowls.vaadin.selectize.demo.ui.views.contacts.SingleContactView;
 import com.byteowls.vaadin.selectize.demo.ui.views.contacts.SingleCountryView;
 import com.vaadin.annotations.Theme;
@@ -54,6 +55,7 @@ public class AddonDemoUI extends UI {
         menuItems = new ArrayList<>();
         menuItems.add(new MenuItem(EditorStructure.SINGLE, "Contact", SingleContactView.class));
         menuItems.add(new MenuItem(EditorStructure.SINGLE, "Country", SingleCountryView.class));
+        menuItems.add(new MenuItem(EditorStructure.MULTIPLE, "Country", MultipleCountryView.class));
         
     }
 

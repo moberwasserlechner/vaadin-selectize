@@ -9,7 +9,6 @@ public class SelectizeState extends JavaScriptComponentState {
     private static final long serialVersionUID = -8607752152999308185L;
 
     public boolean loggingEnabled;
-    public boolean multiple;
     public boolean required;
     public SelectizeTheme theme = SelectizeTheme.DEFAULT;
     public JsonValue configurationJson;

@@ -520,6 +520,10 @@ public class SelectizeConfig<T> implements JsonBuilder {
     public List<T> getOptions() {
         return this.options;
     }
+    
+    public boolean hasOptions() {
+        return (this.options != null && !this.options.isEmpty());
+    }
 
     private void addNotNull(Set<String> set, String value) {
         if (value != null) {

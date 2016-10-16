@@ -5,24 +5,26 @@ import com.vaadin.data.Property;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.CustomField;
 
-public class SelectizeField extends CustomField<Object> {
+public class SelectizeTypedField<T> extends CustomField<T> {
 
     private static final long serialVersionUID = -2787759838519415740L;
 
-    private Selectize<Object> selectize;
+    private Selectize<T> selectize;
+    private Class<T> fieldType;
 
-    public SelectizeField() {
+    public SelectizeTypedField(Class<T> fieldType) {
         super();
+        this.fieldType = fieldType;
         this.selectize = new Selectize<>();
         this.selectize.setSizeFull();
     }
-    
-    public SelectizeField(String caption) {
-        this();
+
+    public SelectizeTypedField(Class<T> fieldType, String caption) {
+        this(fieldType);
         setCaption(caption);
     }
 
-    public SelectizeConfig<Object> config() {
+    public SelectizeConfig<T> config() {
         return this.selectize.config();
     }
 
@@ -43,10 +45,10 @@ public class SelectizeField extends CustomField<Object> {
     protected Component initContent() {
         return selectize;
     }
-    
+
     @Override
-    public Class<Object> getType() {
-        return Object.class;
+    public Class<? extends T> getType() {
+        return fieldType;
     }
 
 }
