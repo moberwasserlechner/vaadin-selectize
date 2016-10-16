@@ -38,28 +38,37 @@ window.com_byteowls_vaadin_selectize_Selectize = function() {
 		if (typeof jQuery == 'undefined') {
 			var jqueryUrl = this.translateVaadinUri("vaadin://selectize/jquery.min.js");
 			this.loadScript(jqueryUrl, (function() {
-				self.initComponent(state);
+				self.loadSelectizeScript(state);
 			}));
 		} else {
-			self.initComponent(state);
+			self.loadSelectizeScript(state);
 		}
 	};
 	
 	/**
 	 * 
 	 */
-	this.initComponent = function(state) {
+	this.loadSelectizeScript = function(state) {
 		var selectizeUrl = this.translateVaadinUri("vaadin://selectize/selectize.min.js");
-		this.loadScript(selectizeUrl, (function() {
-			loggingEnabled = state.loggingEnabled;
-			if (loggingEnabled) {
-				console.log("selectize: configuration is\n", JSON.stringify(state.configurationJson, null, 2));
-			}
-			
-			if (typeof selectize === 'undefined' && state.configurationJson !== 'undefined') {
-				selectize = $("<select>").appendTo(e).selectize(state.configurationJson);
-			}
-		}));
+		var selectizeScript  = document.querySelector('script[src="'+selectizeUrl+'"]');
+		if (selectizeScript == null) {
+			this.loadScript(selectizeUrl, (function() {
+				self.initComponent(state);
+			}));
+		} else {
+			self.initComponent(state);
+		}
+	}
+	
+	this.initComponent = function(state) {
+		loggingEnabled = state.loggingEnabled;
+		if (loggingEnabled) {
+			console.log("selectize: configuration is\n", JSON.stringify(state.configurationJson, null, 2));
+		}
+		
+		if (typeof selectize === 'undefined' && state.configurationJson !== 'undefined') {
+			selectize = $("<select>").appendTo(e).selectize(state.configurationJson);
+		}
 	}
 	
 	//this function will work cross-browser for loading scripts asynchronously
