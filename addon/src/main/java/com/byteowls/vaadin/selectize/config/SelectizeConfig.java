@@ -74,7 +74,7 @@ public class SelectizeConfig<T> implements JsonBuilder {
 
     /**
      * An array of the initial options beans available.
-     * @param options a list of option beans
+     * @param optionBeans a list of option beans
      * @return This for chaining.
      */
     public SelectizeConfig<T> options(List<T> optionBeans) {
@@ -465,7 +465,7 @@ public class SelectizeConfig<T> implements JsonBuilder {
     /**
      * TODO direction missing
      * @param sortField
-     * @return
+     * @return This for chaining.
      */
     public SelectizeConfig<T> sortField(String...  sortField) {
         this.sortField = Arrays.asList(sortField);
