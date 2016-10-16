@@ -237,8 +237,11 @@ public class SelectizeConfig<T> implements JsonBuilder {
      * @param maxItems
      * @return This for chaining.
      */
-    public SelectizeConfig<T> maxItems(int maxItems) {
-        this.maxItems = maxItems;
+    public SelectizeConfig<T> maxItems(Integer maxItems) {
+        this.infiniteItems = (maxItems == null);
+        if (!infiniteItems && maxItems > 0) {
+            this.maxItems = maxItems;
+        }
         return this;
     }
 
@@ -598,7 +601,7 @@ public class SelectizeConfig<T> implements JsonBuilder {
 
                 if (optionLabelGenerator != null) {
                     String label = optionLabelGenerator.getLabel(o);
-                    String name = "label";
+                    String name = "text";
                     if (generatedLabelField != null) {
                         name = generatedLabelField;
                     }
