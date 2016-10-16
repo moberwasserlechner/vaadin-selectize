@@ -39,6 +39,7 @@ dependencies {
     compile ("com.vaadin:vaadin-server:${vaadinVersion}")
     compile ("com.vaadin:vaadin-client-compiled:${vaadinVersion}")
     compile ("com.vaadin:vaadin-themes:${vaadinVersion}")
+    compile ("com.yahoo.platform.yui:yuicompressor:2.4.8")
 }
 
 project.ext.vaadinThemeDir = "VAADIN/themes/${vaadinTheme}"
