@@ -6,24 +6,28 @@ import com.byteowls.vaadin.selectize.config.annotation.SelectizeOption;
 public class BasicOption {
 
     private Object value;
-    private String label;
+    private String text;
 
-    public BasicOption(Object value, String label) {
+    public BasicOption(Object value, String text) {
         this.value = value;
-        this.label = label;
+        this.text = text;
     }
 
     public Object getValue() {
         return value;
     }
+    
     public void setValue(Object value) {
         this.value = value;
     }
-    public String getLabel() {
-        return label;
+
+    public String getText() {
+        return text;
     }
-    public void setLabel(String label) {
-        this.label = label;
+
+    public void setText(String text) {
+        this.text = text;
     }
+    
 
 }
