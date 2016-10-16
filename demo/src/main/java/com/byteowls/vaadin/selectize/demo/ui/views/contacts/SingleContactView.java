@@ -1,10 +1,13 @@
 package com.byteowls.vaadin.selectize.demo.ui.views.contacts;
 
 import com.byteowls.vaadin.selectize.Selectize;
+import com.byteowls.vaadin.selectize.config.SelectizeConfig;
 import com.byteowls.vaadin.selectize.demo.ui.views.AbstractAddonView;
+import com.thedeanda.lorem.LoremIpsum;
 import com.vaadin.spring.annotation.SpringView;
 import com.vaadin.spring.annotation.UIScope;
 import com.vaadin.ui.Component;
+import com.vaadin.ui.VerticalLayout;
 
 @UIScope
 @SpringView
@@ -14,19 +17,28 @@ public class SingleContactView extends AbstractAddonView {
 
     @Override
     public Component getAddonComponent() {
-        Selectize<Contact> component = new Selectize<>();
-        component.setJsLoggingEnabled(true);
-        component
-            .config()
+        LoremIpsum loremIpsum = LoremIpsum.getInstance();
+        VerticalLayout component = new VerticalLayout();
+        component.setSizeFull();
+        component.setSpacing(true);
+        
+        Selectize<Contact> s2 = new Selectize<>();
+        s2.setWidth(80, Unit.PERCENTAGE);
+        s2.setJsLoggingEnabled(true);
+        SelectizeConfig<Contact> s2Config = s2.config()
                 .persist(false)
-                .infiniteItems(true)
+                //.maxItems(1) // default
                 .valueField("id")
-                .labelField("label")
                 .optionLabelGenerator(c -> {
                     return c.getFirstname() + " " + c.getLastname();
-                })
-                .option(new Contact(1L, "Michael", "Oberwasserlechner", "michael@gmail.com"))
-                .option(new Contact(2L, "Max", "Mustermann", "max@gmail.com"));
+                });
+        
+        for (int i = 0; i < 10; i++) {
+            s2Config.option(
+                    new Contact(i, loremIpsum.getFirstName(), loremIpsum.getLastName(), loremIpsum.getEmail()));
+        }
+        component.addComponent(s2);
+        
         return component;
     }
 

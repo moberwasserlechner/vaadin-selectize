@@ -5,12 +5,12 @@ import com.byteowls.vaadin.selectize.config.annotation.SelectizeOption;
 @SelectizeOption(valueField = "id")
 public class Contact {
 
-    private Long id;
+    private Integer id;
     private String firstname;
     private String lastname;
     private String email;
 
-    public Contact(Long id, String firstname, String lastname, String email) {
+    public Contact(Integer id, String firstname, String lastname, String email) {
         super();
         this.id = id;
         this.firstname = firstname;
@@ -18,11 +18,11 @@ public class Contact {
         this.email = email;
     }
 
-    public Long getId() {
+    public Integer getId() {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(Integer id) {
         this.id = id;
     }
 

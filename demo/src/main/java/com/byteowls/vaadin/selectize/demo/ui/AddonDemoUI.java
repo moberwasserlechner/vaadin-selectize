@@ -11,6 +11,7 @@ import org.springframework.core.env.Environment;
 
 import com.byteowls.vaadin.selectize.demo.ui.views.AddonView;
 import com.byteowls.vaadin.selectize.demo.ui.views.contacts.SingleContactView;
+import com.byteowls.vaadin.selectize.demo.ui.views.contacts.SingleCountryView;
 import com.vaadin.annotations.Theme;
 import com.vaadin.data.Item;
 import com.vaadin.data.util.HierarchicalContainer;
@@ -51,7 +52,9 @@ public class AddonDemoUI extends UI {
     private static List<MenuItem> menuItems;
     static {
         menuItems = new ArrayList<>();
-        menuItems.add(new MenuItem(EditorStructure.SINGLE, "Single", SingleContactView.class));
+        menuItems.add(new MenuItem(EditorStructure.SINGLE, "Contact", SingleContactView.class));
+        menuItems.add(new MenuItem(EditorStructure.SINGLE, "Country", SingleCountryView.class));
+        
     }
 
     @Autowired
