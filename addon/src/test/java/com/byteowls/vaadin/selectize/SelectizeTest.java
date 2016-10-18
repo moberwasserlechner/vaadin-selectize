@@ -1,5 +1,8 @@
 package com.byteowls.vaadin.selectize;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -93,6 +96,28 @@ public class SelectizeTest {
         Assert.assertEquals("[{\"id\":42,\"labelTest\":\"9000 Klagenfurt\"}]", json);
     }
 
+    @Test
+    public void itemJson() {
+        Selectize<AddressPlain> selectize = new Selectize<>();
+
+        List<AddressPlain> list = new ArrayList<>();
+        AddressPlain addressPlain = new AddressPlain(42L, "Test", 9000, "Klagenfurt", "AT");
+        list.add(addressPlain);
+        list.add(new AddressPlain(1L, "Hilmgasse 4", 8010, "Graz", "AT"));
+
+        SelectizeConfig<AddressPlain> selectizeConfig = selectize
+                .config()
+                .persist(false)
+                .maxItems(-1)
+                .valueField("id")
+                .options(list)
+                .item(addressPlain);
+
+        JsonArray jsonObj = selectizeConfig.getItemsJson();
+        String json = jsonObj.toJson();
+        Assert.assertEquals("[42]", json);
+    }
+
     public class AddressPlain {
 
         private Long id;
@@ -117,8 +142,6 @@ public class SelectizeTest {
         public void setId(Long id) {
             this.id = id;
         }
-
-
 
         public String getStreet() {
             return street;

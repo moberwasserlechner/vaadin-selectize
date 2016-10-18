@@ -60,13 +60,16 @@ public class SelectizeConfig<T> implements JsonBuilder {
     private List<T> optgroups;
     private LabelGenerator<T> optgroupLabelGenerator;
     private String dataAttr;
+
     private String valueField;
     private String optgroupValueField;
     private String labelField;
     private String optgroupLabelField;
     private String optgroupField;
+    // TODO add sort order
     private List<String> sortField;
     private List<String> searchField;
+
     private SearchConjunction searchConjunction;
     private Boolean lockOptgroupOrder;
     private Boolean copyClassesToDropdown;
@@ -520,7 +523,7 @@ public class SelectizeConfig<T> implements JsonBuilder {
     public List<T> getOptions() {
         return this.options;
     }
-    
+
     public boolean hasOptions() {
         return (this.options != null && !this.options.isEmpty());
     }
@@ -530,11 +533,57 @@ public class SelectizeConfig<T> implements JsonBuilder {
             set.add(value);
         }
     }
-    
+
     public JsonArray getItemsJson() {
         JsonArray arr = Json.createArray();
         if (this.items != null) {
-            
+            String valueFieldName = this.valueField;
+            if (valueFieldName == null) {
+                valueFieldName = "value";
+            }
+
+            Field valueField = null;
+            for (T o : this.items) {
+                if (valueField == null) {
+                    Class<?> i = o.getClass();
+                    while (i != null && i != Object.class) {
+                        if (valueField != null) {
+                            break;
+                        }
+                        for (Field field : i.getDeclaredFields()) {
+                            if (valueFieldName.equals(field.getName())) {
+                                valueField = field;
+                                break;
+                            }
+                        }
+                        i = i.getSuperclass();
+                    }
+                }
+
+                boolean accessible = valueField.isAccessible();
+                if (!accessible) {
+                    valueField.setAccessible(true);
+                }
+                try {
+                    Object value = valueField.get(o);
+                    if (value != null) {
+                        if (value instanceof Number) {
+                            Number n = (Number) value;
+                            arr.set(arr.length(), n.doubleValue());
+                        } else if (value instanceof String) {
+                            arr.set(arr.length(), (String) value);
+                        } else if (value instanceof Boolean) {
+                            arr.set(arr.length(), (Boolean) value);
+                        }
+                    }
+                } catch (IllegalArgumentException | IllegalAccessException e) {
+                    e.printStackTrace();
+                }
+                if (!accessible) {
+                    valueField.setAccessible(true);
+                }
+            }
+
         }
         return arr;
     }
