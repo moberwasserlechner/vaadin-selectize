@@ -182,35 +182,36 @@ public class SelectizeConfig<T> implements JsonBuilder {
         return this;
     }
 
-    /**
-     * Allows the user to create new items that aren't in the initial list of options. Defaults to false.
-     * @param create
-     * @return This for chaining.
-     */
-    public SelectizeConfig<T> create(boolean create) {
-        this.create = create;
-        return this;
-    }
-
-    /**
-     * If true, when user exits the field (clicks outside of input), a new option is created and selected (if create setting is enabled). Defaults to false.
-     * @param createOnBlur
-     * @return This for chaining.
-     */
-    public SelectizeConfig<T> createOnBlur(boolean createOnBlur) {
-        this.createOnBlur = createOnBlur;
-        return this;
-    }
-
-    /**
-     * Specifies a RegExp or a string containing a regular expression that the current search filter must match to be allowed to be created.
-     * @param createFilter
-     * @return This for chaining.
-     */
-    public SelectizeConfig<T> createFilter(String createFilter) {
-        this.createFilter = createFilter;
-        return this;
-    }
+    //TODO #2 create option depends on create callback. therefore config methods removed.
+//    /**
+//     * Allows the user to create new items that aren't in the initial list of options. Defaults to false.
+//     * @param create
+//     * @return This for chaining.
+//     */
+//    public SelectizeConfig<T> create(boolean create) {
+//        this.create = create;
+//        return this;
+//    }
+//
+//    /**
+//     * If true, when user exits the field (clicks outside of input), a new option is created and selected (if create setting is enabled). Defaults to false.
+//     * @param createOnBlur
+//     * @return This for chaining.
+//     */
+//    public SelectizeConfig<T> createOnBlur(boolean createOnBlur) {
+//        this.createOnBlur = createOnBlur;
+//        return this;
+//    }
+//
+//    /**
+//     * Specifies a RegExp or a string containing a regular expression that the current search filter must match to be allowed to be created.
+//     * @param createFilter
+//     * @return This for chaining.
+//     */
+//    public SelectizeConfig<T> createFilter(String createFilter) {
+//        this.createFilter = createFilter;
+//        return this;
+//    }
 
     /**
      * Toggles match highlighting within the dropdown menu. Defaults to true.
@@ -782,10 +783,10 @@ public class SelectizeConfig<T> implements JsonBuilder {
     public JsonObject buildJson() {
         JsonObject map = Json.createObject();
         JUtils.putNotNull(map, "delimiter", delimiter);
-        JUtils.putNotNull(map, "create", create);
-        // TODO create callback
-        JUtils.putNotNull(map, "createOnBlur", createOnBlur);
-        JUtils.putNotNull(map, "createFilter", createFilter);
+        // TODO #2 create callback
+//        JUtils.putNotNull(map, "create", create);
+//        JUtils.putNotNull(map, "createOnBlur", createOnBlur);
+//        JUtils.putNotNull(map, "createFilter", createFilter);
         JUtils.putNotNull(map, "highlight", highlight);
         JUtils.putNotNull(map, "persist", persist);
         JUtils.putNotNull(map, "openOnFocus", openOnFocus);
