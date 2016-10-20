@@ -2,12 +2,14 @@ package com.byteowls.vaadin.selectize.config;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import com.byteowls.vaadin.selectize.config.annotation.SelectizeOption;
+import com.byteowls.vaadin.selectize.config.annotation.SelectizeOptionLabel;
+import com.byteowls.vaadin.selectize.config.annotation.SelectizeOptionSearch;
+import com.byteowls.vaadin.selectize.config.annotation.SelectizeOptionSort;
+import com.byteowls.vaadin.selectize.config.annotation.SelectizeOptionValue;
 import com.byteowls.vaadin.selectize.utils.JUtils;
 import com.byteowls.vaadin.selectize.utils.JsonBuilder;
 import com.byteowls.vaadin.selectize.utils.LabelGenerator;
@@ -18,6 +20,11 @@ import elemental.json.JsonObject;
 
 public class SelectizeConfig<T> implements JsonBuilder {
 
+    public static final String DEFAULT_LABEL_FIELD = "text";
+    public static final String DEFAULT_VALUE_FIELD = "value";
+    public static final String DEFAULT_OPTGROUP_LABEL_FIELD = "label";
+    public static final String DEFAULT_OPTGROUP_FIELD = "optgroup";
+
     public enum SearchConjunction {
         AND, OR;
     }
@@ -26,6 +33,7 @@ public class SelectizeConfig<T> implements JsonBuilder {
         REMOVE_BUTTON, DROPDOWN_HEADER, OPTGROUP_COLUMNS, RESTORE_ON_BACKSPACE, DRAG_DROP;
     }
 
+    private Class<T> optionsClass;
     private List<T> options;
     private LabelGenerator<T> optionLabelGenerator;
     private String generatedLabelField;
@@ -66,14 +74,23 @@ public class SelectizeConfig<T> implements JsonBuilder {
     private String labelField;
     private String optgroupLabelField;
     private String optgroupField;
-    // TODO add sort order
-    private List<String> sortField;
-    private List<String> searchField;
+    private List<SelectizeSort> sortFields;
+    private Set<String> searchFields;
 
     private SearchConjunction searchConjunction;
     private Boolean lockOptgroupOrder;
     private Boolean copyClassesToDropdown;
     private Set<String> plugins;
+
+    /**
+     * An array of the initial options beans available.
+     * @param optionBeans a list of option beans
+     * @return This for chaining.
+     */
+    public SelectizeConfig<T> optionsClass(Class<T> optionsClass) {
+        this.optionsClass = optionsClass;
+        return this;
+    }
 
     /**
      * An array of the initial options beans available.
@@ -426,6 +443,13 @@ public class SelectizeConfig<T> implements JsonBuilder {
     }
 
     /**
+     * @return The value field name. If null the library uses 'value' as default value.
+     */
+    public String getValueField() {
+        return this.valueField;
+    }
+
+    /**
      * The name of the option group property that serves as its unique identifier. Defaults to 'value'.
      * @param optgroupValueField
      * @return This for chaining.
@@ -435,6 +459,8 @@ public class SelectizeConfig<T> implements JsonBuilder {
         return this;
     }
 
+
+
     /**
      * The name of the property to render as an option / item label (not needed when custom rendering functions are defined). Defaults to 'text'. 
      * @param labelField
@@ -443,6 +469,13 @@ public class SelectizeConfig<T> implements JsonBuilder {
     public SelectizeConfig<T> labelField(String labelField) {
         this.labelField = labelField;
         return this;
+    }
+
+    /**
+     * @return The label field name. If null the library uses 'text' as default value.
+     */
+    public String getLabelField() {
+        return this.labelField;
     }
 
     /**
@@ -466,22 +499,59 @@ public class SelectizeConfig<T> implements JsonBuilder {
     }
 
     /**
-     * TODO direction missing
+     * The order of the options in the drop down. Default direction is ascending.
      * @param sortField
      * @return This for chaining.
      */
-    public SelectizeConfig<T> sortField(String...  sortField) {
-        this.sortField = Arrays.asList(sortField);
-        return this;
+    public SelectizeConfig<T> sortField(String sortField) {
+        return sortField(sortField, true);
     }
 
     /**
-     * Property names to analyze when filtering options. Defaults to text
+     * The order of the options in the drop down.
+     * @param sortField
+     * @return This for chaining.
+     */
+    public SelectizeConfig<T> sortField(String sortField, boolean asc) {
+        if (this.sortFields == null) {
+            this.sortFields = new ArrayList<>();
+        }
+        this.sortFields.add(new SelectizeSort(sortField, asc));
+        return this;
+    }
+
+    public List<SelectizeSort> getSortFields() {
+        return this.sortFields;
+    }
+
+    /**
+     * Property names to analyze when filtering options. Defaults to text.
      * @param searchField
      * @return This for chaining.
      */
-    public SelectizeConfig<T> searchField(String...  searchField) {
-        this.searchField = Arrays.asList(searchField);
+    public SelectizeConfig<T> searchFields(String...  searchFields) {
+        for (String searchField : searchFields) {
+            if (searchField != null) {
+                searchField(searchField);
+            }
+        }
+        return this;
+    }
+
+    public Set<String> getSearchFields() {
+        return this.searchFields;
+    }
+
+    /**
+     * Add property name to analyze when filtering options. Defaults to text.
+     * @param searchField
+     * @return This for chaining.
+     */
+    public SelectizeConfig<T> searchField(String searchField) {
+        if (this.searchFields == null) {
+            this.searchFields = new HashSet<>();
+        }
+        this.searchFields.add(searchField);
         return this;
     }
 
@@ -534,12 +604,55 @@ public class SelectizeConfig<T> implements JsonBuilder {
         }
     }
 
+    @SuppressWarnings("unchecked")
+    public boolean resolveAnnotations() {
+        if (this.optionsClass == null && this.options != null && !this.options.isEmpty()) {
+            T obj = this.options.get(0);
+            this.optionsClass = (Class<T>) obj.getClass();
+        }
+
+        if (this.optionsClass != null) {
+            Class<?> i = this.optionsClass;
+            while (i != null && i != Object.class) {
+                for (Field field : i.getDeclaredFields()) {
+                    if (this.valueField == null) {
+                        SelectizeOptionValue optionValue = field.getAnnotation(SelectizeOptionValue.class);
+                        if (optionValue != null) {
+                            valueField(field.getName());
+                        }
+                    }
+
+                    if (this.labelField == null) {
+                        SelectizeOptionLabel optionLabel = field.getAnnotation(SelectizeOptionLabel.class);
+                        if (optionLabel != null) {
+                            labelField(field.getName());
+                        }
+                    }
+
+                    SelectizeOptionSearch optionSearch = field.getAnnotation(SelectizeOptionSearch.class);
+                    if (optionSearch != null) {
+                        searchField(field.getName());
+                    }
+
+                    SelectizeOptionSort optionSort = field.getAnnotation(SelectizeOptionSort.class);
+                    if (optionSort != null) {
+                        sortField(field.getName(), optionSort.asc());
+                    }
+                }
+                i = i.getSuperclass();
+            }
+
+            return true;
+        }
+        return false;
+    }
+
     public JsonArray getItemsJson() {
         JsonArray arr = Json.createArray();
         if (this.items != null) {
             String valueFieldName = this.valueField;
             if (valueFieldName == null) {
-                valueFieldName = "value";
+                valueFieldName = DEFAULT_VALUE_FIELD;
             }
 
             Field valueField = null;
@@ -599,23 +712,21 @@ public class SelectizeConfig<T> implements JsonBuilder {
                 addNotNull(constrainToFields, this.optgroupLabelField);
                 addNotNull(constrainToFields, this.optgroupValueField);
                 addNotNull(constrainToFields, this.valueField);
-                if (this.searchField != null) {
-                    for (String s : searchField) {
+                if (this.searchFields != null) {
+                    for (String s : searchFields) {
                         addNotNull(constrainToFields, s);
                     }
                 }
-                if (this.sortField != null) {
-                    for (String s : sortField) {
-                        addNotNull(constrainToFields, s);
+                if (this.sortFields != null) {
+                    for (SelectizeSort s : this.sortFields) {
+                        addNotNull(constrainToFields, s.getName());
                     }
                 }
             }
 
-            SelectizeOption classAnnotation = null;
             for (T o : this.options) {
                 if (fields.isEmpty()) {
                     Class<?> i = o.getClass();
-                    classAnnotation = i.getAnnotation(SelectizeOption.class);
                     while (i != null && i != Object.class) {
                         for (Field field : i.getDeclaredFields()) {
                             if (!field.isSynthetic() && (constrainToFields.contains(field.getName()) || !this.useOnlyConfiguredFields)) {
@@ -654,7 +765,7 @@ public class SelectizeConfig<T> implements JsonBuilder {
 
                 if (optionLabelGenerator != null) {
                     String label = optionLabelGenerator.getLabel(o);
-                    String name = "text";
+                    String name = DEFAULT_LABEL_FIELD;
                     if (generatedLabelField != null) {
                         name = generatedLabelField;
                     }
@@ -706,8 +817,8 @@ public class SelectizeConfig<T> implements JsonBuilder {
         JUtils.putNotNull(map, "labelField", labelField);
         JUtils.putNotNull(map, "optgroupLabelField", optgroupLabelField);
         JUtils.putNotNull(map, "optgroupField", optgroupField);
-        JUtils.putNotNull(map, "sortField", sortField);
-        JUtils.putNotNull(map, "searchField", searchField);
+        JUtils.putNotNullBuilders(map, "sortField", sortFields);
+        JUtils.putNotNull(map, "searchField", searchFields);
         if (searchConjunction != null) {
             JUtils.putNotNull(map, "searchConjunction", searchConjunction.toString().toLowerCase());
         }

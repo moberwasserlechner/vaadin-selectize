@@ -14,7 +14,7 @@ import elemental.json.JsonArray;
 /**
  * @author michael@byteowls.com
  */
-public class SelectizeTest {
+public class MethodFieldTest {
 
     @Test
     public void includeAllBeanMembers() {
@@ -68,7 +68,7 @@ public class SelectizeTest {
 
         JsonArray optionsJson = selectizeConfig.getOptionsJson();
         String json = optionsJson.toJson();
-        Assert.assertEquals("[{\"id\":42,\"text\":\"9000 Klagenfurt\"}]", json);
+        Assert.assertEquals("[{\"id\":42,\""+SelectizeConfig.DEFAULT_LABEL_FIELD+"\":\"9000 Klagenfurt\"}]", json);
     }
 
     @Test

@@ -1,8 +1,5 @@
 package com.byteowls.vaadin.selectize.config.options;
 
-import com.byteowls.vaadin.selectize.config.annotation.SelectizeOption;
-
-@SelectizeOption
 public class BasicGroupOption {
 
     private Object value;

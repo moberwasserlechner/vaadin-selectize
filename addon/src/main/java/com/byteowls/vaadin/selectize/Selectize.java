@@ -20,13 +20,27 @@ public class Selectize<T> extends AbstractJavaScriptComponent {
     public Selectize() {
         addJsFunctions();
     }
-    
+
     /**
      * @return configure the selectize component.
+     * @see #config(Class) if you want to use annotation on beans.
      */
     public SelectizeConfig<T> config() {
         if (this.config == null) {
             this.config = new SelectizeConfig<>();
+        }
+        return this.config;
+    }
+
+    /**
+     * 
+     * @param optionClass 
+     * @return a config container to configure the component. If you want to use annotations on your option beans provide the class.
+     */
+    public SelectizeConfig<T> config(Class<T> optionClass) {
+        if (this.config == null) {
+            this.config = new SelectizeConfig<>();
+            this.config.optionsClass(optionClass);
         }
         return this.config;
     }

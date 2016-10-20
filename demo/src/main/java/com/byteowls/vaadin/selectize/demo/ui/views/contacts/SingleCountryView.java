@@ -28,7 +28,7 @@ public class SingleCountryView extends AbstractAddonView {
         s1.setJsLoggingEnabled(true);
         SelectizeConfig<BasicOption> selectizeConfig = s1.config()
                 .persist(false)
-                .searchField("value", "text");
+                .searchFields("value", "text");
         
         for (Locale l : Locale.getAvailableLocales()) {
             // Build in BasicOption class uses default fieldnames

@@ -32,7 +32,7 @@ public class MultipleCountryView extends AbstractAddonView {
                 .hideSelected(true)
                 .maxItems(null) // same as .infiniteItems(true)
                 .plugins(Plugin.REMOVE_BUTTON, Plugin.RESTORE_ON_BACKSPACE)
-                .searchField("value", "text");
+                .searchFields("value", "text");
         
         for (Locale l : Locale.getAvailableLocales()) {
             // Build in BasicOption class uses default fieldnames

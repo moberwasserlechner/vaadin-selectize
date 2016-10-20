@@ -18,6 +18,7 @@ dependencies {
     compile ("com.vaadin:vaadin-server:${vaadinVersion}")
 
     testCompile "junit:junit:4.12"
+    testCompile "com.thedeanda:lorem:2.1"
 }
 
 if (JavaVersion.current().isJava8Compatible()) {

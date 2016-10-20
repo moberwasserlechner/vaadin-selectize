@@ -1,50 +1,41 @@
-package com.byteowls.vaadin.selectize.demo.ui.views.contacts;
+package com.byteowls.vaadin.selectize;
 
-public class Contact {
+import com.byteowls.vaadin.selectize.config.annotation.SelectizeOptionSearch;
+import com.byteowls.vaadin.selectize.config.annotation.SelectizeOptionSort;
 
-    private Integer id;
+public class PersonEntity extends AbstractIdEntity {
+    
+    @SelectizeOptionSearch
     private String firstname;
+    @SelectizeOptionSearch
     private String lastname;
+    @SelectizeOptionSort(asc = false)
     private String email;
 
-    public Contact(Integer id, String firstname, String lastname, String email) {
-        super();
-        this.id = id;
+    public PersonEntity(String id, String firstname, String lastname, String email) {
+        super(id);
         this.firstname = firstname;
         this.lastname = lastname;
         this.email = email;
     }
-
-    public Integer getId() {
-        return id;
-    }
-
-    public void setId(Integer id) {
-        this.id = id;
-    }
-
     public String getFirstname() {
         return firstname;
     }
-
     public void setFirstname(String firstname) {
         this.firstname = firstname;
     }
-
     public String getLastname() {
         return lastname;
     }
-
     public void setLastname(String lastname) {
         this.lastname = lastname;
     }
-
     public String getEmail() {
         return email;
     }
-
     public void setEmail(String email) {
         this.email = email;
     }
 
+    
 }
