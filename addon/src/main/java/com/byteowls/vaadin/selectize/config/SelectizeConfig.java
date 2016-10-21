@@ -31,7 +31,7 @@ public class SelectizeConfig<T> implements JsonBuilder {
     }
 
     public enum Plugin {
-        REMOVE_BUTTON, DROPDOWN_HEADER, OPTGROUP_COLUMNS, RESTORE_ON_BACKSPACE, DRAG_DROP;
+        REMOVE_BUTTON, DROPDOWN_HEADER, OPTGROUP_COLUMNS, RESTORE_ON_BACKSPACE; // TODO #8 DRAG_DROP
     }
 
     private Class<T> optionsClass;

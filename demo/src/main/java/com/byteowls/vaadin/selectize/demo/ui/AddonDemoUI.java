@@ -11,6 +11,7 @@ import org.springframework.core.env.Environment;
 
 import com.byteowls.vaadin.selectize.demo.ui.views.AddonView;
 import com.byteowls.vaadin.selectize.demo.ui.views.annotation.AnnotatedClassView;
+import com.byteowls.vaadin.selectize.demo.ui.views.annotation.AnnotatedMultiCompView;
 import com.byteowls.vaadin.selectize.demo.ui.views.contacts.MultipleCountryView;
 import com.byteowls.vaadin.selectize.demo.ui.views.contacts.SingleContactView;
 import com.byteowls.vaadin.selectize.demo.ui.views.contacts.SingleCountryView;
@@ -58,7 +59,7 @@ public class AddonDemoUI extends UI {
         menuItems.add(new MenuItem(EditorStructure.SINGLE, "Country", SingleCountryView.class));
         menuItems.add(new MenuItem(EditorStructure.MULTIPLE, "Country", MultipleCountryView.class));
         menuItems.add(new MenuItem(EditorStructure.MULTIPLE, "Annotated", AnnotatedClassView.class));
-        
+        menuItems.add(new MenuItem(EditorStructure.MULTIPLE, "Multiple components", AnnotatedMultiCompView.class));
     }
 
     @Autowired
