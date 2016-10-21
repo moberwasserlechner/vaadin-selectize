@@ -15,6 +15,7 @@ public class SingleContactView extends AbstractAddonView {
 
     private static final long serialVersionUID = -5516501224827050267L;
 
+    // ### start source
     @Override
     public Component getAddonComponent() {
         LoremIpsum loremIpsum = LoremIpsum.getInstance();
@@ -41,5 +42,32 @@ public class SingleContactView extends AbstractAddonView {
         
         return component;
     }
+    
+    public class Contact {
+
+        private Integer id;
+        private String firstname;
+        private String lastname;
+        private String email;
+
+        public Contact(Integer id, String firstname, String lastname, String email) {
+            super();
+            this.id = id;
+            this.firstname = firstname;
+            this.lastname = lastname;
+            this.email = email;
+        }
+
+        public Integer getId() { return id; }
+
+        public String getFirstname() { return firstname; }
+
+        public String getLastname() { return lastname; }
+
+        public String getEmail() { return email; }
+
+    }
+    
+    // ### end source
 
 }

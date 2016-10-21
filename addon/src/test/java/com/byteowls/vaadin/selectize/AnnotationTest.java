@@ -1,5 +1,6 @@
 package com.byteowls.vaadin.selectize;
 
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -41,9 +42,7 @@ public class AnnotationTest {
     @Test
     public void annotatedSearchFields() {
         Selectize<PersonEntity> selectize = new Selectize<>();
-        SelectizeConfig<PersonEntity> selectizeConfig =
-                selectize.config(PersonEntity.class);
-        
+        SelectizeConfig<PersonEntity> selectizeConfig = selectize.config(PersonEntity.class);
         selectizeConfig.resolveAnnotations();
         
         Set<String> expectedSearchNames = new HashSet<>();
@@ -56,9 +55,7 @@ public class AnnotationTest {
     @Test
     public void annotatedSortFields() {
         Selectize<PersonEntity> selectize = new Selectize<>();
-        SelectizeConfig<PersonEntity> selectizeConfig =
-                selectize.config(PersonEntity.class);
-        
+        SelectizeConfig<PersonEntity> selectizeConfig = selectize.config(PersonEntity.class);
         selectizeConfig.resolveAnnotations();
         
         List<SelectizeSort> sortFields = selectizeConfig.getSortFields();
@@ -67,4 +64,21 @@ public class AnnotationTest {
         Assert.assertEquals("email", emailSort.getName());
         Assert.assertEquals(false, emailSort.isAsc());
     }
+    
+    @Test
+    public void annotatedSortOrderFields() {
+        Selectize<SortedEntity> selectize = new Selectize<>();
+        SelectizeConfig<SortedEntity> selectizeConfig = selectize.config(SortedEntity.class);
+        selectizeConfig.resolveAnnotations();
+        
+        List<SelectizeSort> sortFields = selectizeConfig.getSortFields();
+        String[] expected = new String[] {"c", "a", "d"};
+        List<String> actual = new ArrayList<>();
+        for(SelectizeSort s : sortFields) {
+            actual.add(s.getName());
+        }
+        Assert.assertArrayEquals(expected, actual.toArray(new String[actual.size()]));
+    }
+    
+    
 }

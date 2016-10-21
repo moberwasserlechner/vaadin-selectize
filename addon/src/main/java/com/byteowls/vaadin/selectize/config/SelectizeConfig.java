@@ -2,6 +2,7 @@ package com.byteowls.vaadin.selectize.config;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -38,7 +39,7 @@ public class SelectizeConfig<T> implements JsonBuilder {
     private LabelGenerator<T> optionLabelGenerator;
     private String generatedLabelField;
     private List<T> items;
-    private boolean useOnlyConfiguredFields;
+    private boolean useOnlyConfiguredFields = true;
 
     // general
     private String delimiter;
@@ -133,7 +134,7 @@ public class SelectizeConfig<T> implements JsonBuilder {
     }
 
     /**
-     * If true only bean members defined in the field methods are provided to the client side.
+     * If true only bean members defined in the field methods are provided to the client side. Defaults to true.
      * @return This for chaining.
      */
     public SelectizeConfig<T> useOnlyConfiguredFields(boolean useOnlyConfiguredFields) {
@@ -183,35 +184,35 @@ public class SelectizeConfig<T> implements JsonBuilder {
     }
 
     //TODO #2 create option depends on create callback. therefore config methods removed.
-//    /**
-//     * Allows the user to create new items that aren't in the initial list of options. Defaults to false.
-//     * @param create
-//     * @return This for chaining.
-//     */
-//    public SelectizeConfig<T> create(boolean create) {
-//        this.create = create;
-//        return this;
-//    }
-//
-//    /**
-//     * If true, when user exits the field (clicks outside of input), a new option is created and selected (if create setting is enabled). Defaults to false.
-//     * @param createOnBlur
-//     * @return This for chaining.
-//     */
-//    public SelectizeConfig<T> createOnBlur(boolean createOnBlur) {
-//        this.createOnBlur = createOnBlur;
-//        return this;
-//    }
-//
-//    /**
-//     * Specifies a RegExp or a string containing a regular expression that the current search filter must match to be allowed to be created.
-//     * @param createFilter
-//     * @return This for chaining.
-//     */
-//    public SelectizeConfig<T> createFilter(String createFilter) {
-//        this.createFilter = createFilter;
-//        return this;
-//    }
+    //    /**
+    //     * Allows the user to create new items that aren't in the initial list of options. Defaults to false.
+    //     * @param create
+    //     * @return This for chaining.
+    //     */
+    //    public SelectizeConfig<T> create(boolean create) {
+    //        this.create = create;
+    //        return this;
+    //    }
+    //
+    //    /**
+    //     * If true, when user exits the field (clicks outside of input), a new option is created and selected (if create setting is enabled). Defaults to false.
+    //     * @param createOnBlur
+    //     * @return This for chaining.
+    //     */
+    //    public SelectizeConfig<T> createOnBlur(boolean createOnBlur) {
+    //        this.createOnBlur = createOnBlur;
+    //        return this;
+    //    }
+    //
+    //    /**
+    //     * Specifies a RegExp or a string containing a regular expression that the current search filter must match to be allowed to be created.
+    //     * @param createFilter
+    //     * @return This for chaining.
+    //     */
+    //    public SelectizeConfig<T> createFilter(String createFilter) {
+    //        this.createFilter = createFilter;
+    //        return this;
+    //    }
 
     /**
      * Toggles match highlighting within the dropdown menu. Defaults to true.
@@ -508,20 +509,27 @@ public class SelectizeConfig<T> implements JsonBuilder {
         return sortField(sortField, true);
     }
 
+    public SelectizeConfig<T> sortField(String sortField, boolean asc) {
+        return sortField(sortField, asc, 0);
+    }
+
     /**
      * The order of the options in the drop down.
      * @param sortField
      * @return This for chaining.
      */
-    public SelectizeConfig<T> sortField(String sortField, boolean asc) {
+    public SelectizeConfig<T> sortField(String sortField, boolean asc, int order) {
         if (this.sortFields == null) {
             this.sortFields = new ArrayList<>();
         }
-        this.sortFields.add(new SelectizeSort(sortField, asc));
+        this.sortFields.add(new SelectizeSort(sortField, asc, order));
         return this;
     }
 
     public List<SelectizeSort> getSortFields() {
+        if (this.sortFields != null) {
+            Collections.sort(this.sortFields);
+        }
         return this.sortFields;
     }
 
@@ -637,7 +645,7 @@ public class SelectizeConfig<T> implements JsonBuilder {
 
                     SelectizeOptionSort optionSort = field.getAnnotation(SelectizeOptionSort.class);
                     if (optionSort != null) {
-                        sortField(field.getName(), optionSort.asc());
+                        sortField(field.getName(), optionSort.asc(), optionSort.order());
                     }
                 }
                 i = i.getSuperclass();
@@ -766,7 +774,10 @@ public class SelectizeConfig<T> implements JsonBuilder {
 
                 if (optionLabelGenerator != null) {
                     String label = optionLabelGenerator.getLabel(o);
-                    String name = DEFAULT_LABEL_FIELD;
+                    String name = this.labelField;
+                    if (name == null) {
+                        name = DEFAULT_LABEL_FIELD;
+                    }
                     if (generatedLabelField != null) {
                         name = generatedLabelField;
                     }
@@ -781,12 +792,13 @@ public class SelectizeConfig<T> implements JsonBuilder {
 
     @Override
     public JsonObject buildJson() {
+        resolveAnnotations();
         JsonObject map = Json.createObject();
         JUtils.putNotNull(map, "delimiter", delimiter);
         // TODO #2 create callback
-//        JUtils.putNotNull(map, "create", create);
-//        JUtils.putNotNull(map, "createOnBlur", createOnBlur);
-//        JUtils.putNotNull(map, "createFilter", createFilter);
+        //        JUtils.putNotNull(map, "create", create);
+        //        JUtils.putNotNull(map, "createOnBlur", createOnBlur);
+        //        JUtils.putNotNull(map, "createFilter", createFilter);
         JUtils.putNotNull(map, "highlight", highlight);
         JUtils.putNotNull(map, "persist", persist);
         JUtils.putNotNull(map, "openOnFocus", openOnFocus);
@@ -818,7 +830,7 @@ public class SelectizeConfig<T> implements JsonBuilder {
         JUtils.putNotNull(map, "labelField", labelField);
         JUtils.putNotNull(map, "optgroupLabelField", optgroupLabelField);
         JUtils.putNotNull(map, "optgroupField", optgroupField);
-        JUtils.putNotNullBuilders(map, "sortField", sortFields);
+        JUtils.putNotNullBuilders(map, "sortField", getSortFields());
         JUtils.putNotNull(map, "searchField", searchFields);
         if (searchConjunction != null) {
             JUtils.putNotNull(map, "searchConjunction", searchConjunction.toString().toLowerCase());

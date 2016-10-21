@@ -12,5 +12,7 @@ public @interface SelectizeOptionSort {
     /**
      */
     boolean asc() default true;
+    
+    int order() default 1;
 
 }

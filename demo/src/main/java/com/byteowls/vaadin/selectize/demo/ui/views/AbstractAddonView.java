@@ -51,9 +51,9 @@ public abstract class AbstractAddonView extends VerticalLayout implements AddonV
                     StringBuilder codelines = new StringBuilder();
                     String line = reader.readLine();
                     while (line != null) {
-                        if (line.contains("public Component getAddonComponent(")) {
+                        if (line.contains("// ### start source")) {
                             inCodeBlock = true;
-                        } else if (line.contains("return component;")) {
+                        } else if (line.contains("// ### end source")) {
                             inCodeBlock = false;
                         } else if (inCodeBlock) {
                             codelines.append(line);

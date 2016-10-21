@@ -23,6 +23,7 @@ public class MethodFieldTest {
                 .config()
                 .persist(false)
                 .maxItems(-1)
+                .useOnlyConfiguredFields(false)
                 .option(new AddressPlain(1L, "Test", 9000, "Klagenfurt", "AT"));
 
         JsonArray optionsJson = selectizeConfig.getOptionsJson();
@@ -39,7 +40,6 @@ public class MethodFieldTest {
                 .maxItems(-1)
                 .valueField("id")
                 .labelField("city")
-                .useOnlyConfiguredFields(true)
                 .option(new AddressPlain(42L, "Test", 9000, "Klagenfurt", "AT"));
 
         JsonArray optionsJson = selectizeConfig.getOptionsJson();
@@ -55,6 +55,7 @@ public class MethodFieldTest {
                 .persist(false)
                 .maxItems(-1)
                 .valueField("id")
+                .useOnlyConfiguredFields(false)
                 .optionLabelGenerator(new LabelGenerator<AddressPlain>() {
                     private static final long serialVersionUID = -5420372836423660745L;
 

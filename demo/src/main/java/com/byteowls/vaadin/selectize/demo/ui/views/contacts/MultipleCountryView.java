@@ -18,6 +18,8 @@ public class MultipleCountryView extends AbstractAddonView {
 
     private static final long serialVersionUID = -5516501224827050267L;
 
+    // ### start source
+    
     @Override
     public Component getAddonComponent() {
         VerticalLayout component = new VerticalLayout();
@@ -42,5 +44,7 @@ public class MultipleCountryView extends AbstractAddonView {
         
         return component;
     }
+    
+    // ### end source
 
 }
