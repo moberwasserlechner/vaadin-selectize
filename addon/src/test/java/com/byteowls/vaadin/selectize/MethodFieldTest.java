@@ -55,7 +55,6 @@ public class MethodFieldTest {
                 .persist(false)
                 .maxItems(-1)
                 .valueField("id")
-                .useOnlyConfiguredFields(false)
                 .optionLabelGenerator(new LabelGenerator<AddressPlain>() {
                     private static final long serialVersionUID = -5420372836423660745L;
 
@@ -64,7 +63,6 @@ public class MethodFieldTest {
                         return option.getPostcode() + " " + option.getCity();
                     }
                 })
-                .useOnlyConfiguredFields(true)
                 .option(new AddressPlain(42L, "Test", 9000, "Klagenfurt", "AT"));
 
         JsonArray optionsJson = selectizeConfig.getOptionsJson();
@@ -89,7 +87,6 @@ public class MethodFieldTest {
                         return option.getPostcode() + " " + option.getCity();
                     }
                 })
-                .useOnlyConfiguredFields(true)
                 .option(new AddressPlain(42L, "Test", 9000, "Klagenfurt", "AT"));
 
         JsonArray optionsJson = selectizeConfig.getOptionsJson();

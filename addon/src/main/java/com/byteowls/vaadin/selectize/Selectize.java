@@ -1,15 +1,26 @@
 package com.byteowls.vaadin.selectize;
 
+import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 
 import com.byteowls.vaadin.selectize.config.SelectizeConfig;
 import com.vaadin.annotations.JavaScript;
 import com.vaadin.ui.AbstractJavaScriptComponent;
+import com.vaadin.ui.JavaScriptFunction;
+
+import elemental.json.JsonArray;
+import elemental.json.JsonValue;
 
 @JavaScript({"vaadin://selectize/jquery.min.js", "vaadin://selectize/selectize.min.js", "vaadin://selectize/selectize-connector.js"})
 public class Selectize<T> extends AbstractJavaScriptComponent {
 
     private static final long serialVersionUID = -4371120535603078616L;
+
+    public interface BlurListener<T> extends Serializable {
+        void valueChange(List<T> items);
+    }
+    private List<BlurListener<T>> blurListeners = new ArrayList<>();
 
     private SelectizeConfig<T> config;
 
@@ -89,6 +100,13 @@ public class Selectize<T> extends AbstractJavaScriptComponent {
         }
     }
 
+    public void replaceItem(T item) {
+        SelectizeConfig<T> config = config().clearItems().item(item);
+        if (isAttached()) {
+            callFunction("replaceItems", config.getItemsJson());
+        }
+    }
+
     public void replaceItems(List<T> items) {
         SelectizeConfig<T> config = config().items(items);
         if (isAttached()) {
@@ -105,15 +123,52 @@ public class Selectize<T> extends AbstractJavaScriptComponent {
 
 
     private void addJsFunctions() {
-        // this function can be called in connector.js e.g. self.onDataPointClick(datasetIndex, dataIndex)
-        //        addFunction("TODO add function", new JavaScriptFunction() {
-        //
-        //            private static final long serialVersionUID = -7865596041611535165L;
-        //
-        //            @Override
-        //            public void call(JsonArray arguments) {
-        //            }
-        //        });
+        addFunction("onBlurSelectize", new JavaScriptFunction() {
+            private static final long serialVersionUID = -7865596041611535165L;
+
+            @Override
+            public void call(JsonArray args) {
+                JsonValue jsonValue = args.get(0);
+                if (jsonValue instanceof JsonArray) {
+                    JsonArray arr = args.getArray(0);
+                    Class<?> valueClass = config().getValueClass();
+                    List<Object> valueList = new ArrayList<>();
+                    for (int i = 0; i < arr.length(); i++) {
+                        String stringValue = arr.getString(i);
+                        if (valueClass != null) {
+                            if (valueClass.isAssignableFrom(String.class)) {
+                                valueList.add(stringValue);
+                            } else if (valueClass.isAssignableFrom(Integer.class)) {
+                                valueList.add(Integer.valueOf(stringValue));
+                            } else if (valueClass.isAssignableFrom(Long.class)) {
+                                valueList.add(Long.valueOf(stringValue));
+                            } else if (valueClass.isAssignableFrom(Double.class)) {
+                                valueList.add(Double.valueOf(stringValue));
+                            }
+                        } else {
+                            valueList.add(stringValue);
+                        }
+                    }
+
+                    List<T> selected = config().getOptionsByValues(valueList);
+                    for (BlurListener<T> l : blurListeners) {
+                        l.valueChange(selected);
+                    }
+                } else {
+                    for (BlurListener<T> l : blurListeners) {
+                        l.valueChange(null);
+                    }
+                }
+            }
+        });
+    }
+
+    /**
+     * Add a listener to handle the changed value from the editor.
+     * @param listener a simple blurlistener retrieving just the value
+     */
+    public void addBlurListener(BlurListener<T> listener) {
+        this.blurListeners.add(listener);
     }
 
     @Override

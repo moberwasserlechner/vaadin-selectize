@@ -80,5 +80,36 @@ public class AnnotationTest {
         Assert.assertArrayEquals(expected, actual.toArray(new String[actual.size()]));
     }
     
+    @Test
+    public void checkValueClass() {
+        Selectize<PersonEntity> selectize = new Selectize<>();
+        SelectizeConfig<PersonEntity> selectizeConfig = selectize.config(PersonEntity.class);
+        selectizeConfig.resolveAnnotations();
+        
+        Assert.assertEquals(String.class, selectizeConfig.getValueClass());
+    }
+    
+    @Test
+    public void getOptionsByObjectList() {
+        Selectize<PersonEntity> selectize = new Selectize<>();
+        SelectizeConfig<PersonEntity> selectizeConfig = selectize.config(PersonEntity.class);
+        selectizeConfig.resolveAnnotations();
+        
+        Assert.assertEquals(String.class, selectizeConfig.getValueClass());
+        
+        List<PersonEntity> list = new ArrayList<>();
+        for (int i = 0; i < 10; i++) {
+            list.add(new PersonEntity(String.valueOf(i), "Michael"+i, "Oberwasserlechner" + 1, "test@test.com"));
+        }
+        selectizeConfig.options(list);
+        
+        List<Object> selected = new ArrayList<>();
+        selected.add("1");
+        selected.add("3");
+        List<PersonEntity> optionsByValues = selectizeConfig.getOptionsByValues(selected);
+        // TODO better check
+        Assert.assertNotNull(optionsByValues);
+    }
+    
     
 }

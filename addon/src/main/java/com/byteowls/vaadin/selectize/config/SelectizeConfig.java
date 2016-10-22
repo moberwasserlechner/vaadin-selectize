@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 
 import com.byteowls.vaadin.selectize.config.annotation.SelectizeOptionLabel;
@@ -35,6 +36,7 @@ public class SelectizeConfig<T> implements JsonBuilder {
     }
 
     private Class<T> optionsClass;
+    private Class<?> valueClass;
     private List<T> options;
     private LabelGenerator<T> optionLabelGenerator;
     private String generatedLabelField;
@@ -84,12 +86,17 @@ public class SelectizeConfig<T> implements JsonBuilder {
     private Set<String> plugins;
 
     /**
-     * An array of the initial options beans available.
-     * @param optionBeans a list of option beans
+     * Set the class of the option beans. Mainly for annotation processing if not items are loaded yet.
+     * @param optionsClass the class of the option beans.
      * @return This for chaining.
      */
     public SelectizeConfig<T> optionsClass(Class<T> optionsClass) {
         this.optionsClass = optionsClass;
+        return this;
+    }
+    
+    public SelectizeConfig<T> valueClass(Class<?> valueClass) {
+        this.valueClass = valueClass;
         return this;
     }
 
@@ -535,10 +542,10 @@ public class SelectizeConfig<T> implements JsonBuilder {
 
     /**
      * Property names to analyze when filtering options. Defaults to text.
-     * @param searchField
+     * @param searchFields
      * @return This for chaining.
      */
-    public SelectizeConfig<T> searchFields(String...  searchFields) {
+    public SelectizeConfig<T> searchFields(String... searchFields) {
         for (String searchField : searchFields) {
             if (searchField != null) {
                 searchField(searchField);
@@ -662,6 +669,7 @@ public class SelectizeConfig<T> implements JsonBuilder {
                     if (this.valueField == null) {
                         SelectizeOptionValue optionValue = field.getAnnotation(SelectizeOptionValue.class);
                         if (optionValue != null) {
+                            this.valueClass = field.getType();
                             valueField(field.getName());
                         }
                     }
@@ -702,19 +710,7 @@ public class SelectizeConfig<T> implements JsonBuilder {
             Field valueField = null;
             for (T o : this.items) {
                 if (valueField == null) {
-                    Class<?> i = o.getClass();
-                    while (i != null && i != Object.class) {
-                        if (valueField != null) {
-                            break;
-                        }
-                        for (Field field : i.getDeclaredFields()) {
-                            if (valueFieldName.equals(field.getName())) {
-                                valueField = field;
-                                break;
-                            }
-                        }
-                        i = i.getSuperclass();
-                    }
+                    valueField = getValueReflectField(o.getClass(), valueFieldName);
                 }
 
                 boolean accessible = valueField.isAccessible();
@@ -736,13 +732,28 @@ public class SelectizeConfig<T> implements JsonBuilder {
                 } catch (IllegalArgumentException | IllegalAccessException e) {
                     e.printStackTrace();
                 }
-                if (!accessible) {
-                    valueField.setAccessible(true);
-                }
             }
 
         }
         return arr;
+    }
+    
+    public Field getValueReflectField(Class<?> clazz, String valueFieldName) {
+        Field valueField = null;
+        Class<?> i = clazz;
+        while (i != null && i != Object.class) {
+            if (valueField != null) {
+                break;
+            }
+            for (Field field : i.getDeclaredFields()) {
+                if (valueFieldName.equals(field.getName())) {
+                    valueField = field;
+                    break;
+                }
+            }
+            i = i.getSuperclass();
+        }
+        return valueField;
     }
 
     public JsonArray getOptionsJson() {
@@ -802,9 +813,6 @@ public class SelectizeConfig<T> implements JsonBuilder {
                     } catch (IllegalArgumentException | IllegalAccessException e) {
                         e.printStackTrace();
                     }
-                    if (!accessible) {
-                        f.setAccessible(true);
-                    }
                 }
 
                 if (optionLabelGenerator != null) {
@@ -823,6 +831,38 @@ public class SelectizeConfig<T> implements JsonBuilder {
             }
         }
         return arr;
+    }
+    
+    public List<T> getOptionsByValues(List<?> valueList) {
+        List<T> result = new ArrayList<>();
+        String valueFieldName = this.valueField;
+        if (valueFieldName == null) {
+            valueFieldName = DEFAULT_VALUE_FIELD;
+        }
+
+        Field valueField = null;
+        for (T o : this.options) {
+            if (valueField == null) {
+                valueField = getValueReflectField(o.getClass(), valueFieldName);
+            }
+            
+            try {
+                boolean accessible = valueField.isAccessible();
+                if (!accessible) {
+                    valueField.setAccessible(true);
+                }
+                Object object = valueField.get(o);
+                for (Object value : valueList) {
+                    if (Objects.equals(object, value)) {
+                        result.add(o);
+                        break;
+                    }
+                }
+            } catch (IllegalArgumentException | IllegalAccessException e) {
+                e.printStackTrace();
+            }
+        }
+        return result;
     }
 
     @Override
@@ -883,8 +923,159 @@ public class SelectizeConfig<T> implements JsonBuilder {
         if (itemsArray != null) {
             map.put("items", itemsArray);
         }
-        // render
         return map;
+    }
+
+    public Class<T> getOptionsClass() {
+        return optionsClass;
+    }
+
+    public Class<?> getValueClass() {
+        return valueClass;
+    }
+
+    public LabelGenerator<T> getOptionLabelGenerator() {
+        return optionLabelGenerator;
+    }
+
+    public String getGeneratedLabelField() {
+        return generatedLabelField;
+    }
+
+    public boolean isUseOnlyConfiguredFields() {
+        return useOnlyConfiguredFields;
+    }
+
+    public String getDelimiter() {
+        return delimiter;
+    }
+
+    public Boolean getCreate() {
+        return create;
+    }
+
+    public Boolean getCreateOnBlur() {
+        return createOnBlur;
+    }
+
+    public String getCreateFilter() {
+        return createFilter;
+    }
+
+    public Boolean getHighlight() {
+        return highlight;
+    }
+
+    public Boolean getPersist() {
+        return persist;
+    }
+
+    public Boolean getOpenOnFocus() {
+        return openOnFocus;
+    }
+
+    public Integer getMaxOptions() {
+        return maxOptions;
+    }
+
+    public Integer getMaxItems() {
+        return maxItems;
+    }
+
+    public boolean isInfiniteItems() {
+        return infiniteItems;
+    }
+
+    public Boolean getHideSelected() {
+        return hideSelected;
+    }
+
+    public Boolean getCloseAfterSelect() {
+        return closeAfterSelect;
+    }
+
+    public Boolean getAllowEmptyOption() {
+        return allowEmptyOption;
+    }
+
+    public Integer getScrollDuration() {
+        return scrollDuration;
+    }
+
+    public Integer getLoadThrottle() {
+        return loadThrottle;
+    }
+
+    public String getLoadingClass() {
+        return loadingClass;
+    }
+
+    public String getPlaceholder() {
+        return placeholder;
+    }
+
+    public Boolean getPreload() {
+        return preload;
+    }
+
+    public Boolean getPreloadOnFocus() {
+        return preloadOnFocus;
+    }
+
+    public String getDropdownParent() {
+        return dropdownParent;
+    }
+
+    public Boolean getAddPrecedence() {
+        return addPrecedence;
+    }
+
+    public Boolean getSelectOnTab() {
+        return selectOnTab;
+    }
+
+    public Boolean getDiacritics() {
+        return diacritics;
+    }
+
+    public List<T> getOptgroups() {
+        return optgroups;
+    }
+
+    public LabelGenerator<T> getOptgroupLabelGenerator() {
+        return optgroupLabelGenerator;
+    }
+
+    public String getDataAttr() {
+        return dataAttr;
+    }
+
+    public String getOptgroupValueField() {
+        return optgroupValueField;
+    }
+
+    public String getOptgroupLabelField() {
+        return optgroupLabelField;
+    }
+
+    public String getOptgroupField() {
+        return optgroupField;
+    }
+
+    public SearchConjunction getSearchConjunction() {
+        return searchConjunction;
+    }
+
+    public Boolean getLockOptgroupOrder() {
+        return lockOptgroupOrder;
+    }
+
+    public Boolean getCopyClassesToDropdown() {
+        return copyClassesToDropdown;
+    }
+
+    public Set<String> getPlugins() {
+        return plugins;
     }
 
 }

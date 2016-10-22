@@ -39,6 +39,9 @@ window.com_byteowls_vaadin_selectize_Selectize = function() {
 				console.log("selectize: configuration is\n", JSON.stringify(state.configurationJson, null, 2));
 			}
 			selectElement = $("<select>").appendTo(e).selectize(state.configurationJson);
+			selectElement[0].selectize.on("blur", function() {
+				self.onBlurSelectize($(selectElement).val());
+			});
 		}
 	};
 

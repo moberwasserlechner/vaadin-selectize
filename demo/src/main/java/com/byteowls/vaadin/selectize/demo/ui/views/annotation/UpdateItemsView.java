@@ -41,7 +41,7 @@ public class UpdateItemsView  extends AbstractAddonView {
         selectize.setSizeFull();
 //        s2.setJsLoggingEnabled(true);
         SelectizeConfig<PersonEntity> config = selectize.config()
-                .infiniteItems(true).useOnlyConfiguredFields(true)
+                .infiniteItems(true)
                 .optionLabelGenerator(c -> {
                     return c.getFirstname() + " " + c.getLastname() + " (" + c.getEmail() + ")";
                 });

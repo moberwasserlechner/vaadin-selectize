@@ -41,7 +41,7 @@ public class UpdateOptionsView  extends AbstractAddonView {
         s2.setSizeFull();
         s2.setJsLoggingEnabled(true);
         SelectizeConfig<PersonEntity> s2Config = s2.config()
-                .infiniteItems(true).useOnlyConfiguredFields(true)
+                .infiniteItems(true)
                 .optionLabelGenerator(c -> {
                     return c.getFirstname() + " " + c.getLastname() + " (" + c.getEmail() + ")";
                 });
