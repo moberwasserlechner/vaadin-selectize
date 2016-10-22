@@ -599,10 +599,27 @@ public class SelectizeConfig<T> implements JsonBuilder {
         return this;
     }
 
+    /**
+     * Get the list of configured options.
+     */
     public List<T> getOptions() {
         return this.options;
     }
 
+    /**
+     * Clear configured options.
+     * @return This for chaining.
+     */
+    public SelectizeConfig<T> clearOptions() {
+        if (this.options != null) {
+            this.options.clear();
+        }
+        return this;
+    }
+
+    /**
+     * @return True if there are any options.
+     */
     public boolean hasOptions() {
         return (this.options != null && !this.options.isEmpty());
     }

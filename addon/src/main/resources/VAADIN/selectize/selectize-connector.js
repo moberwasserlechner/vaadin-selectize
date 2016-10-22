@@ -7,7 +7,7 @@ window.com_byteowls_vaadin_selectize_Selectize = function() {
 	// Please note that in JavaScript, this is not necessarily defined inside callback functions and it might therefore be necessary to assign the reference to a separate variable
 	var self = this;
 	var loggingEnabled = false;
-	var selectize;
+	var selectElement;
 	var stateChangedCnt = 0;
 
 	// called every time the state is changed
@@ -34,13 +34,27 @@ window.com_byteowls_vaadin_selectize_Selectize = function() {
 		var url = this.translateVaadinUri("vaadin://selectize/css/selectize."+state.theme.toLowerCase()+".css");
 		themeLink.setAttribute("href", url);
 
-		if (typeof selectize === 'undefined' && state.configurationJson !== 'undefined') {
+		if (typeof selectElement === 'undefined' && state.configurationJson !== 'undefined') {
 			if (loggingEnabled) {
 				console.log("selectize: configuration is\n", JSON.stringify(state.configurationJson, null, 2));
 			}
-			var element = $("<select>").appendTo(e);
-			selectize = element.selectize(state.configurationJson);
+			selectElement = $("<select>").appendTo(e).selectize(state.configurationJson);
 		}
 	};
-	
+
+	this.replaceOptions = function(newOptions) {
+		if (selectElement != null) {
+			this.clearOptions();
+			newOptions.forEach(function(o) {
+				selectElement[0].selectize.addOption(o);
+			});
+			selectElement[0].selectize.refreshOptions(false);
+		}
+	}
+
+	this.clearOptions = function() {
+		if (selectElement != null) {
+			selectElement[0].selectize.clearOptions();
+		}
+	}
 };

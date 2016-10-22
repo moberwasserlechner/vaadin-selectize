@@ -11,7 +11,6 @@ import javax.annotation.PostConstruct;
 import org.springframework.util.ClassUtils;
 
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
-import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.VerticalLayout;
 
@@ -27,7 +26,6 @@ public abstract class AbstractAddonView extends VerticalLayout implements AddonV
         Component layout = getAddonComponent();
         layout.setWidth(100, Unit.PERCENTAGE);
         addComponent(layout);
-        setComponentAlignment(layout, Alignment.MIDDLE_CENTER);
     }
 
     @Override

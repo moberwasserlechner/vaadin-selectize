@@ -1,11 +1,10 @@
 package com.byteowls.vaadin.selectize;
 
+import java.util.List;
+
 import com.byteowls.vaadin.selectize.config.SelectizeConfig;
 import com.vaadin.annotations.JavaScript;
 import com.vaadin.ui.AbstractJavaScriptComponent;
-import com.vaadin.ui.JavaScriptFunction;
-
-import elemental.json.JsonArray;
 
 @JavaScript({"vaadin://selectize/jquery.min.js", "vaadin://selectize/selectize.min.js", "vaadin://selectize/selectize-connector.js"})
 public class Selectize<T> extends AbstractJavaScriptComponent {
@@ -68,16 +67,39 @@ public class Selectize<T> extends AbstractJavaScriptComponent {
         getState().loggingEnabled = jsLoggingEnabled;
     }
 
+
+    /**
+     * Sets the given options and replaces any already existing ones. 
+     * @param options
+     */
+    public void replaceOptions(List<T> options) {
+        SelectizeConfig<T> config = config().options(options);
+        if (isAttached()) {
+            callFunction("replaceOptions", config.getOptionsJson());
+        }
+    }
+
+    /**
+     * Clears all existing options
+     */
+    public void clearOptions() {
+        config().clearOptions();
+        if (isAttached()) {
+            callFunction("clearOptions");
+        }
+    }
+
+
     private void addJsFunctions() {
         // this function can be called in connector.js e.g. self.onDataPointClick(datasetIndex, dataIndex)
-        addFunction("TODO add function", new JavaScriptFunction() {
-
-            private static final long serialVersionUID = -7865596041611535165L;
-
-            @Override
-            public void call(JsonArray arguments) {
-            }
-        });
+        //        addFunction("TODO add function", new JavaScriptFunction() {
+        //
+        //            private static final long serialVersionUID = -7865596041611535165L;
+        //
+        //            @Override
+        //            public void call(JsonArray arguments) {
+        //            }
+        //        });
     }
 
     @Override
