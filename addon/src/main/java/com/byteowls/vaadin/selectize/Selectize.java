@@ -7,7 +7,7 @@ import com.vaadin.ui.JavaScriptFunction;
 
 import elemental.json.JsonArray;
 
-@JavaScript({"vaadin://selectize/selectize-connector.js"})
+@JavaScript({"vaadin://selectize/jquery.min.js", "vaadin://selectize/selectize.min.js", "vaadin://selectize/selectize-connector.js"})
 public class Selectize<T> extends AbstractJavaScriptComponent {
 
     private static final long serialVersionUID = -4371120535603078616L;

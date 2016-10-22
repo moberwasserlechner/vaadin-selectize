@@ -4,10 +4,11 @@ Vaadin 7 wrapper for the Selectize.js jquery plugin. https://github.com/selectiz
 
 ## Features
 
-* On the fly jquery detection and inclusion if missing
+* Easy fluent api
+* Bean options
+* Using annotations to figure out value, label, sorting and search properties
 * 4 out of the box themes
-* ...
-
+* Separate typed form field classes for multi select and single select 
 
 ## Demo
 
