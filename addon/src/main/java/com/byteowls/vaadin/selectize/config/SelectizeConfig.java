@@ -600,7 +600,7 @@ public class SelectizeConfig<T> implements JsonBuilder {
     }
 
     /**
-     * Get the list of configured options.
+     * @return List of configured options.
      */
     public List<T> getOptions() {
         return this.options;
@@ -613,6 +613,24 @@ public class SelectizeConfig<T> implements JsonBuilder {
     public SelectizeConfig<T> clearOptions() {
         if (this.options != null) {
             this.options.clear();
+        }
+        return this;
+    }
+
+    /**
+     * @return The currently selected items.
+     */
+    public List<T> getItems() {
+        return this.items;
+    }
+
+    /**
+     * Clear configured items / selected options.
+     * @return This for chaining.
+     */
+    public SelectizeConfig<T> clearItems() {
+        if (this.items != null) {
+            this.items.clear();
         }
         return this;
     }

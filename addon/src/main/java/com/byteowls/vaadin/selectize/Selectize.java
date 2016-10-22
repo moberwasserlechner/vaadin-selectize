@@ -89,6 +89,20 @@ public class Selectize<T> extends AbstractJavaScriptComponent {
         }
     }
 
+    public void replaceItems(List<T> items) {
+        SelectizeConfig<T> config = config().items(items);
+        if (isAttached()) {
+            callFunction("replaceItems", config.getItemsJson());
+        }
+    }
+
+    public void clearItems() {
+        config().clearItems();
+        if (isAttached()) {
+            callFunction("clearItems");
+        }
+    }
+
 
     private void addJsFunctions() {
         // this function can be called in connector.js e.g. self.onDataPointClick(datasetIndex, dataIndex)

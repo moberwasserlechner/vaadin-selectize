@@ -57,4 +57,20 @@ window.com_byteowls_vaadin_selectize_Selectize = function() {
 			selectElement[0].selectize.clearOptions();
 		}
 	}
+
+	this.replaceItems = function(newItems) {
+		if (selectElement != null) {
+			this.clearItems();
+			newItems.forEach(function(o) {
+				selectElement[0].selectize.addItem(o);
+			});
+			selectElement[0].selectize.refreshItems();
+		}
+	}
+
+	this.clearItems = function() {
+		if (selectElement != null) {
+			selectElement[0].selectize.clear(true);
+		}
+	}
 };
