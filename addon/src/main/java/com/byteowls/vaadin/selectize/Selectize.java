@@ -10,6 +10,9 @@ import com.vaadin.ui.AbstractJavaScriptComponent;
 import com.vaadin.ui.JavaScriptFunction;
 
 import elemental.json.JsonArray;
+import elemental.json.JsonBoolean;
+import elemental.json.JsonNumber;
+import elemental.json.JsonString;
 import elemental.json.JsonValue;
 
 @JavaScript({"vaadin://selectize/jquery.min.js", "vaadin://selectize/selectize.min.js", "vaadin://selectize/selectize-connector.js"})
@@ -129,38 +132,61 @@ public class Selectize<T> extends AbstractJavaScriptComponent {
             @Override
             public void call(JsonArray args) {
                 JsonValue jsonValue = args.get(0);
+                Class<?> valueClass = config().getValueClass();
+                List<Object> valueList = new ArrayList<>();
                 if (jsonValue instanceof JsonArray) {
-                    JsonArray arr = args.getArray(0);
-                    Class<?> valueClass = config().getValueClass();
-                    List<Object> valueList = new ArrayList<>();
+                    JsonArray arr = (JsonArray) jsonValue;
                     for (int i = 0; i < arr.length(); i++) {
                         String stringValue = arr.getString(i);
-                        if (valueClass != null) {
-                            if (valueClass.isAssignableFrom(String.class)) {
-                                valueList.add(stringValue);
-                            } else if (valueClass.isAssignableFrom(Integer.class)) {
-                                valueList.add(Integer.valueOf(stringValue));
-                            } else if (valueClass.isAssignableFrom(Long.class)) {
-                                valueList.add(Long.valueOf(stringValue));
-                            } else if (valueClass.isAssignableFrom(Double.class)) {
-                                valueList.add(Double.valueOf(stringValue));
-                            }
-                        } else {
-                            valueList.add(stringValue);
+                        Object valueObj = convertString(valueClass, stringValue);
+                        if (valueObj != null) {
+                            valueList.add(valueObj);
                         }
                     }
-
-                    List<T> selected = config().getOptionsByValues(valueList);
-                    for (BlurListener<T> l : blurListeners) {
-                        l.valueChange(selected);
+                } else  if (jsonValue instanceof JsonNumber) {
+                    JsonNumber v = (JsonNumber) jsonValue;
+                    Object valueObj = convertString(valueClass, String.valueOf(v.getNumber()));
+                    if (valueObj != null) {
+                        valueList.add(valueObj);
                     }
-                } else {
-                    for (BlurListener<T> l : blurListeners) {
-                        l.valueChange(null);
+
+                }  if (jsonValue instanceof JsonString) {
+                    JsonString v = (JsonString) jsonValue;
+                    Object valueObj = convertString(valueClass, v.getString());
+                    if (valueObj != null) {
+                        valueList.add(valueObj);
+                    }
+                }  if (jsonValue instanceof JsonBoolean) {
+                    JsonBoolean v = (JsonBoolean) jsonValue;
+                    Object valueObj = convertString(valueClass, String.valueOf(v.getBoolean()));
+                    if (valueObj != null) {
+                        valueList.add(valueObj);
                     }
                 }
+
+                List<T> selected = config().getOptionsByValues(valueList);
+                for (BlurListener<T> l : blurListeners) {
+                    l.valueChange(selected);
+                }
+
             }
         });
+    }
+
+    private Object convertString(Class<?> valueClass, String stringValue) {
+        Object valueObj = null;
+        if (stringValue != null && !stringValue.isEmpty()) {
+            if (valueClass == null || valueClass.isAssignableFrom(String.class)) {
+                valueObj = stringValue;
+            } if (valueClass.isAssignableFrom(Integer.class)) {
+                valueObj = Integer.valueOf(stringValue);
+            } else if (valueClass.isAssignableFrom(Long.class)) {
+                valueObj = Long.valueOf(stringValue);
+            } else if (valueClass.isAssignableFrom(Double.class)) {
+                valueObj = Double.valueOf(stringValue);
+            }
+        }
+        return valueObj;
     }
 
     /**

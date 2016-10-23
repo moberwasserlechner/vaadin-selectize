@@ -94,7 +94,7 @@ public class SelectizeConfig<T> implements JsonBuilder {
         this.optionsClass = optionsClass;
         return this;
     }
-    
+
     public SelectizeConfig<T> valueClass(Class<?> valueClass) {
         this.valueClass = valueClass;
         return this;
@@ -737,7 +737,7 @@ public class SelectizeConfig<T> implements JsonBuilder {
         }
         return arr;
     }
-    
+
     public Field getValueReflectField(Class<?> clazz, String valueFieldName) {
         Field valueField = null;
         Class<?> i = clazz;
@@ -832,34 +832,36 @@ public class SelectizeConfig<T> implements JsonBuilder {
         }
         return arr;
     }
-    
+
     public List<T> getOptionsByValues(List<?> valueList) {
         List<T> result = new ArrayList<>();
-        String valueFieldName = this.valueField;
-        if (valueFieldName == null) {
-            valueFieldName = DEFAULT_VALUE_FIELD;
-        }
-
-        Field valueField = null;
-        for (T o : this.options) {
-            if (valueField == null) {
-                valueField = getValueReflectField(o.getClass(), valueFieldName);
+        if (valueList != null && !valueList.isEmpty()) {
+            String valueFieldName = this.valueField;
+            if (valueFieldName == null) {
+                valueFieldName = DEFAULT_VALUE_FIELD;
             }
-            
-            try {
-                boolean accessible = valueField.isAccessible();
-                if (!accessible) {
-                    valueField.setAccessible(true);
+
+            Field valueField = null;
+            for (T o : this.options) {
+                if (valueField == null) {
+                    valueField = getValueReflectField(o.getClass(), valueFieldName);
                 }
-                Object object = valueField.get(o);
-                for (Object value : valueList) {
-                    if (Objects.equals(object, value)) {
-                        result.add(o);
-                        break;
+
+                try {
+                    boolean accessible = valueField.isAccessible();
+                    if (!accessible) {
+                        valueField.setAccessible(true);
                     }
+                    Object object = valueField.get(o);
+                    for (Object value : valueList) {
+                        if (Objects.equals(object, value)) {
+                            result.add(o);
+                            break;
+                        }
+                    }
+                } catch (IllegalArgumentException | IllegalAccessException e) {
+                    e.printStackTrace();
                 }
-            } catch (IllegalArgumentException | IllegalAccessException e) {
-                e.printStackTrace();
             }
         }
         return result;

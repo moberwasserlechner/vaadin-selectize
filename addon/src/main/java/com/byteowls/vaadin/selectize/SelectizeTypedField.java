@@ -25,7 +25,7 @@ public class SelectizeTypedField<T> extends CustomField<T> {
             private static final long serialVersionUID = 3565961306222180148L;
             @Override
             public void valueChange(List<T> items) {
-                if (items != null) {
+                if (items != null && !items.isEmpty()) {
                     setValue(items.get(0));
                 } else {
                     setValue(null);
@@ -61,7 +61,6 @@ public class SelectizeTypedField<T> extends CustomField<T> {
         return selectize;
     }
 
-
     public void replaceOptions(List<T> options) {
         selectize.replaceOptions(options);
     }
@@ -70,11 +69,11 @@ public class SelectizeTypedField<T> extends CustomField<T> {
         selectize.clearOptions();
     }
 
-    public void replaceItems(List<T> items) {
-        selectize.replaceItems(items);
+    public void replaceItem(T item) {
+        selectize.replaceItem(item);
     }
 
-    public void clearItems() {
+    public void clearItem() {
         selectize.clearItems();
     }
 
