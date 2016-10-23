@@ -10,7 +10,7 @@ public class SelectizeState extends JavaScriptComponentState {
 
     public boolean loggingEnabled;
     public boolean required;
-    public SelectizeTheme theme = SelectizeTheme.DEFAULT;
+    public SelectizeTheme theme = SelectizeTheme.VALO;
     public JsonValue configurationJson;
 
 }

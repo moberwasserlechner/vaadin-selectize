@@ -2,6 +2,6 @@ package com.byteowls.vaadin.selectize.config;
 
 public enum SelectizeTheme {
     
-    DEFAULT, LEGACY, BOOTSTRAP2, BOOTSTRAP3
+    VALO, DEFAULT, LEGACY, BOOTSTRAP2, BOOTSTRAP3
 
 }

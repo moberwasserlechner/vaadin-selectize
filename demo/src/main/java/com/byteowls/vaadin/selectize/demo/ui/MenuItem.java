@@ -7,11 +7,11 @@ import com.vaadin.spring.internal.Conventions;
 
 public class MenuItem {
     
-    private EditorStructure type;
+    private MenuStructure type;
     private String label;
     private String viewName;
     
-    public MenuItem(EditorStructure type, String label, Class<? extends AddonView> clazz) {
+    public MenuItem(MenuStructure type, String label, Class<? extends AddonView> clazz) {
         super();
         this.type = type;
         this.label = label;
@@ -24,11 +24,11 @@ public class MenuItem {
         return label;
     }
 
-    public EditorStructure getType() {
+    public MenuStructure getType() {
         return type;
     }
 
-    public void setType(EditorStructure type) {
+    public void setType(MenuStructure type) {
         this.type = type;
     }
 

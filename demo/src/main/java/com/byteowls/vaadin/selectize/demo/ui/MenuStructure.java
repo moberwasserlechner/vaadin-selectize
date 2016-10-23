@@ -3,15 +3,15 @@ package com.byteowls.vaadin.selectize.demo.ui;
 import com.vaadin.server.FontAwesome;
 import com.vaadin.server.FontIcon;
 
-public enum EditorStructure {
+public enum MenuStructure {
     
     SINGLE(FontAwesome.EDIT), 
     MULTIPLE(FontAwesome.GLOBE), 
-    THEMED(FontAwesome.PAINT_BRUSH);
+    FORM(FontAwesome.BARS);
     
     FontIcon icon;
     
-    private EditorStructure(FontIcon icon) {
+    private MenuStructure(FontIcon icon) {
         this.icon = icon;
     }
 

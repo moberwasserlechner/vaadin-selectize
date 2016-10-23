@@ -15,6 +15,8 @@ import com.byteowls.vaadin.selectize.demo.ui.views.annotation.AnnotatedMultiComp
 import com.byteowls.vaadin.selectize.demo.ui.views.annotation.UpdateItemsView;
 import com.byteowls.vaadin.selectize.demo.ui.views.annotation.UpdateOptionsView;
 import com.byteowls.vaadin.selectize.demo.ui.views.annotation.BlurListenerView;
+import com.byteowls.vaadin.selectize.demo.ui.views.annotation.FormLayoutLightView;
+import com.byteowls.vaadin.selectize.demo.ui.views.annotation.FormLayoutView;
 import com.byteowls.vaadin.selectize.demo.ui.views.contacts.MultipleCountryView;
 import com.byteowls.vaadin.selectize.demo.ui.views.contacts.SingleContactView;
 import com.byteowls.vaadin.selectize.demo.ui.views.contacts.SingleCountryView;
@@ -58,15 +60,17 @@ public class AddonDemoUI extends UI {
     private static List<MenuItem> menuItems;
     static {
         menuItems = new ArrayList<>();
-        menuItems.add(new MenuItem(EditorStructure.SINGLE, "Contact", SingleContactView.class));
-        menuItems.add(new MenuItem(EditorStructure.SINGLE, "Country", SingleCountryView.class));
-        menuItems.add(new MenuItem(EditorStructure.MULTIPLE, "Country", MultipleCountryView.class));
-        menuItems.add(new MenuItem(EditorStructure.MULTIPLE, "Annotated", AnnotatedClassView.class));
-        menuItems.add(new MenuItem(EditorStructure.MULTIPLE, "Multiple components", AnnotatedMultiCompView.class));
-        menuItems.add(new MenuItem(EditorStructure.MULTIPLE, "Update/clear options", UpdateOptionsView.class));
-        menuItems.add(new MenuItem(EditorStructure.MULTIPLE, "Update/clear items/selected", UpdateItemsView.class));
-        menuItems.add(new MenuItem(EditorStructure.MULTIPLE, "On Blur", BlurListenerView.class));
+        menuItems.add(new MenuItem(MenuStructure.SINGLE, "Contact", SingleContactView.class));
+        menuItems.add(new MenuItem(MenuStructure.SINGLE, "Country", SingleCountryView.class));
+        menuItems.add(new MenuItem(MenuStructure.MULTIPLE, "Country", MultipleCountryView.class));
+        menuItems.add(new MenuItem(MenuStructure.MULTIPLE, "Annotated", AnnotatedClassView.class));
+        menuItems.add(new MenuItem(MenuStructure.MULTIPLE, "Multiple components", AnnotatedMultiCompView.class));
+        menuItems.add(new MenuItem(MenuStructure.MULTIPLE, "Update/clear options", UpdateOptionsView.class));
+        menuItems.add(new MenuItem(MenuStructure.MULTIPLE, "Update/clear items/selected", UpdateItemsView.class));
+        menuItems.add(new MenuItem(MenuStructure.MULTIPLE, "On Blur", BlurListenerView.class));
         
+        menuItems.add(new MenuItem(MenuStructure.FORM, "Form", FormLayoutView.class));
+        menuItems.add(new MenuItem(MenuStructure.FORM, "Light form", FormLayoutLightView.class));
     }
 
     @Autowired
@@ -178,7 +182,7 @@ public class AddonDemoUI extends UI {
         tree.setItemCaptionPropertyId(CAPTION_PROPERTY);
         tree.setItemIconPropertyId(ICON_PROPERTY);
 
-        for (EditorStructure editorStructure : EditorStructure.values()) {
+        for (MenuStructure editorStructure : MenuStructure.values()) {
             List<MenuItem> children = new ArrayList<>();
             for (MenuItem i : menuItems) {
                 if (i.getType() == editorStructure) {

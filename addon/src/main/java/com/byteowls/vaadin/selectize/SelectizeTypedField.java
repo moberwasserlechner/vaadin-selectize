@@ -17,7 +17,6 @@ public class SelectizeTypedField<T> extends CustomField<T> {
 
     public SelectizeTypedField(Class<T> fieldType) {
         addStyleName("selectize-typed");
-        setSizeFull();
         this.fieldType = fieldType;
         this.selectize = new Selectize<>();
         this.selectize.setSizeFull();
