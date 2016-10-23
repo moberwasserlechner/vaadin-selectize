@@ -5,10 +5,15 @@ Vaadin 7 wrapper for the Selectize.js jquery plugin. https://github.com/selectiz
 ## Features
 
 * Easy fluent api
-* Bean options
-* Using annotations to figure out value, label, sorting and search properties
-* 4 out of the box themes
-* Separate typed form field classes for multi select and single select 
+* Annotations to figure out value, label, sorting and search properties
+ * @SelectizeOptionLabel
+ * @SelectizeOptionSearch
+ * @SelectizeOptionSort
+ * @SelectizeOptionValue
+* Typed fields for both multi and single select
+ * SelectizeTypedField ... Single select
+ * SelectizeTypedListField ... Multi select, Token field
+* Fields fits nicely into Valo themed form layout with light styles
 
 ## Demo
 
@@ -78,8 +83,6 @@ Dependency
 ## Usage
 
 For more examples please see the demo app at http://moberwasserlechner.jelastic.servint.net/vaadin-selectize/
-
-
 
 ```
 TODO
