@@ -39,9 +39,15 @@ window.com_byteowls_vaadin_selectize_Selectize = function() {
 				console.log("selectize: configuration is\n", JSON.stringify(state.configurationJson, null, 2));
 			}
 			selectElement = $("<select>").appendTo(e).selectize(state.configurationJson);
-			selectElement[0].selectize.on("blur", function() {
-				self.onBlurSelectize($(selectElement).val());
-			});
+			if (selectElement[0].selectize.settings.maxItems == 1) {
+				selectElement[0].selectize.on("change", function(value) {
+					self.onBlurSelectize(value);
+				});
+			} else {
+				selectElement[0].selectize.on("blur", function() {
+					self.onBlurSelectize($(selectElement).val());
+				});
+			}
 		}
 	};
 

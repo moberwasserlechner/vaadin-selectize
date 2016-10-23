@@ -2,10 +2,8 @@ package com.byteowls.vaadin.selectize.demo.ui.views.annotation;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.ThreadLocalRandom;
 
 import com.byteowls.vaadin.selectize.Selectize;
-import com.byteowls.vaadin.selectize.config.SelectizeConfig;
 import com.byteowls.vaadin.selectize.config.annotation.SelectizeOptionLabel;
 import com.byteowls.vaadin.selectize.config.annotation.SelectizeOptionSearch;
 import com.byteowls.vaadin.selectize.config.annotation.SelectizeOptionSort;
@@ -14,9 +12,7 @@ import com.byteowls.vaadin.selectize.demo.ui.views.AbstractAddonView;
 import com.thedeanda.lorem.LoremIpsum;
 import com.vaadin.spring.annotation.SpringView;
 import com.vaadin.spring.annotation.UIScope;
-import com.vaadin.ui.Button;
 import com.vaadin.ui.Component;
-import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Notification;
 import com.vaadin.ui.Notification.Type;
 import com.vaadin.ui.VerticalLayout;
@@ -36,39 +32,27 @@ public class BlurListenerView  extends AbstractAddonView {
         component.setWidth(100, Unit.PERCENTAGE);
         component.setSpacing(true);
 
-        HorizontalLayout toolbar = new HorizontalLayout();
-        component.addComponent(toolbar);
-
-        Selectize<PersonEntity> selectize = new Selectize<>();
-        selectize.setSizeFull();
-        selectize.setJsLoggingEnabled(true);
-
-        selectize.addBlurListener(list -> {
+        Selectize<PersonEntity> smulti = new Selectize<>();
+        smulti.setSizeFull();
+        smulti.setJsLoggingEnabled(true);
+        smulti.addBlurListener(list -> {
             Notification.show(list != null ? list.toString() : "Empty!", Type.HUMANIZED_MESSAGE);
         });
-        SelectizeConfig<PersonEntity> s2Config = selectize.config()
-                .infiniteItems(true)
-                .optionLabelGenerator(c -> {
-                    return c.getFirstname() + " " + c.getLastname() + " (" + c.getEmail() + ")";
-                });
+        smulti.config().infiniteItems(true).optionLabelGenerator(c -> {
+            return c.getFirstname() + " " + c.getLastname() + " (" + c.getEmail() + ")";
+        }).options(getRandomOptions(10));
 
-        s2Config.options(getRandomOptions(4));
+        component.addComponent(smulti);
 
-        Button newOptions = new Button("Replace options");
-        newOptions.addClickListener(e -> {
-            selectize.replaceOptions(getRandomOptions(ThreadLocalRandom.current().nextInt(2, 100)));
+        Selectize<PersonEntity> ssingle = new Selectize<>();
+        ssingle.setSizeFull();
+        ssingle.setJsLoggingEnabled(true);
+        ssingle.addBlurListener(list -> {
+            Notification.show(list != null ? list.toString() : "Empty!", Type.HUMANIZED_MESSAGE);
         });
-        toolbar.addComponent(newOptions);
+        ssingle.config().optionLabelGenerator(c -> { return c.getFirstname() + " " + c.getLastname(); }).options(getRandomOptions(10));
+        component.addComponent(ssingle);
 
-        Button clearOptions = new Button("Clear options");
-        clearOptions.addClickListener(e -> {
-            selectize.clearOptions();
-        });
-
-        toolbar.addComponent(clearOptions);
-
-        component.addComponent(selectize);
-        component.setExpandRatio(selectize, 1);
         return component;
     }
 
