@@ -20,10 +20,10 @@ public class Selectize<T> extends AbstractJavaScriptComponent {
 
     private static final long serialVersionUID = -4371120535603078616L;
 
-    public interface BlurListener<T> extends Serializable {
-        void valueChange(List<T> items);
+    public interface ValueChangeListener<T> extends Serializable {
+        void valueChanged(List<T> items);
     }
-    private List<BlurListener<T>> blurListeners = new ArrayList<>();
+    private List<ValueChangeListener<T>> valueChangeListeners = new ArrayList<>();
 
     private SelectizeConfig<T> config;
 
@@ -165,8 +165,8 @@ public class Selectize<T> extends AbstractJavaScriptComponent {
                 }
 
                 List<T> selected = config().getOptionsByValues(valueList);
-                for (BlurListener<T> l : blurListeners) {
-                    l.valueChange(selected);
+                for (ValueChangeListener<T> l : valueChangeListeners) {
+                    l.valueChanged(selected);
                 }
 
             }
@@ -178,7 +178,7 @@ public class Selectize<T> extends AbstractJavaScriptComponent {
         if (stringValue != null && !stringValue.isEmpty()) {
             if (valueClass == null || valueClass.isAssignableFrom(String.class)) {
                 valueObj = stringValue;
-            } if (valueClass.isAssignableFrom(Integer.class)) {
+            } else if (valueClass.isAssignableFrom(Integer.class)) {
                 valueObj = Integer.valueOf(stringValue);
             } else if (valueClass.isAssignableFrom(Long.class)) {
                 valueObj = Long.valueOf(stringValue);
@@ -193,8 +193,8 @@ public class Selectize<T> extends AbstractJavaScriptComponent {
      * Add a listener to handle the changed value from the editor.
      * @param listener a simple blurlistener retrieving just the value
      */
-    public void addBlurListener(BlurListener<T> listener) {
-        this.blurListeners.add(listener);
+    public void addValueChangeListener(ValueChangeListener<T> listener) {
+        this.valueChangeListeners.add(listener);
     }
 
     @Override

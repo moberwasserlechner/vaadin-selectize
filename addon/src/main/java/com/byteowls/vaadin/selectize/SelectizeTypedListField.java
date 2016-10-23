@@ -2,7 +2,6 @@ package com.byteowls.vaadin.selectize;
 
 import java.util.List;
 
-import com.byteowls.vaadin.selectize.Selectize.BlurListener;
 import com.byteowls.vaadin.selectize.config.SelectizeConfig;
 import com.vaadin.data.Property;
 import com.vaadin.ui.Component;
@@ -21,10 +20,10 @@ public class SelectizeTypedListField<T> extends CustomField<List<T>> {
         this.selectize = new Selectize<>();
         this.selectize.setSizeFull();
         this.config();
-        this.selectize.addBlurListener(new BlurListener<T>() {
-            private static final long serialVersionUID = 3565961306222180148L;
+        this.selectize.addValueChangeListener(new Selectize.ValueChangeListener<T>() {
+            private static final long serialVersionUID = 2514784415666543312L;
             @Override
-            public void valueChange(List<T> items) {
+            public void valueChanged(List<T> items) {
                 setValue(items);
             }
         });

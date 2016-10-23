@@ -19,7 +19,7 @@ import com.vaadin.ui.VerticalLayout;
 
 @UIScope
 @SpringView
-public class BlurListenerView  extends AbstractAddonView {
+public class ValueChangeListenerView extends AbstractAddonView {
 
     private static final long serialVersionUID = -5516501224827050267L;
 
@@ -35,7 +35,7 @@ public class BlurListenerView  extends AbstractAddonView {
         Selectize<PersonEntity> smulti = new Selectize<>();
         smulti.setSizeFull();
         smulti.setJsLoggingEnabled(true);
-        smulti.addBlurListener(list -> {
+        smulti.addValueChangeListener(list -> {
             Notification.show(list != null ? list.toString() : "Empty!", Type.HUMANIZED_MESSAGE);
         });
         smulti.config().infiniteItems(true).optionLabelGenerator(c -> {
@@ -47,7 +47,7 @@ public class BlurListenerView  extends AbstractAddonView {
         Selectize<PersonEntity> ssingle = new Selectize<>();
         ssingle.setSizeFull();
         ssingle.setJsLoggingEnabled(true);
-        ssingle.addBlurListener(list -> {
+        ssingle.addValueChangeListener(list -> {
             Notification.show(list != null ? list.toString() : "Empty!", Type.HUMANIZED_MESSAGE);
         });
         ssingle.config().optionLabelGenerator(c -> { return c.getFirstname() + " " + c.getLastname(); }).options(getRandomOptions(10));

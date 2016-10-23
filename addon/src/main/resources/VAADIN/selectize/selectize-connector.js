@@ -40,7 +40,7 @@ window.com_byteowls_vaadin_selectize_Selectize = function() {
 			}
 			selectElement = $("<select>").appendTo(e).selectize(state.configurationJson);
 			if (selectElement[0].selectize.settings.maxItems == 1) {
-				selectElement[0].selectize.on("change", function(value) {
+				selectElement[0].selectize.on("item_add", function(value) {
 					self.onBlurSelectize(value);
 				});
 			} else {
@@ -71,7 +71,7 @@ window.com_byteowls_vaadin_selectize_Selectize = function() {
 		if (selectElement != null) {
 			this.clearItems();
 			newItems.forEach(function(o) {
-				selectElement[0].selectize.addItem(o);
+				selectElement[0].selectize.addItem(o, true);
 			});
 			selectElement[0].selectize.refreshItems();
 		}
