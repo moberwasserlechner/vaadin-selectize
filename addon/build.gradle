@@ -113,12 +113,12 @@ bintray {
         repo = 'maven'
         name = 'vaadin-selectize'
         //userOrg = 'byteowls' //An optional organization name when the repo belongs to one of the user's orgs
-        desc = 'Vaadin Add-on for Selectize.js jquery plugin'
+        desc = 'Vaadin Add-on for Selectize.js library'
         websiteUrl = 'https://github.com/moberwasserlechner/vaadin-selectize'
         issueTrackerUrl = 'https://github.com/moberwasserlechner/vaadin-selectize/issues'
         vcsUrl = 'https://github.com/moberwasserlechner/vaadin-selectize.git'
         licenses = ['MIT']
-        labels = ['vaadin', 'addon', 'selectize', 'combobox', 'multiselect']
+        labels = ['vaadin', 'addon', 'selectize', 'combobox', 'multiselect', 'tokenfield']
         publicDownloadNumbers = true
 
         version {
