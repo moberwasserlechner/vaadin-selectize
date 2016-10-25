@@ -3,8 +3,8 @@ package com.byteowls.vaadin.selectize.demo.ui.views.annotation;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.byteowls.vaadin.selectize.SelectizeTypedField;
-import com.byteowls.vaadin.selectize.SelectizeTypedListField;
+import com.byteowls.vaadin.selectize.SelectizeDropDownField;
+import com.byteowls.vaadin.selectize.SelectizeTokenField;
 import com.byteowls.vaadin.selectize.config.SelectizeConfig.Plugin;
 import com.byteowls.vaadin.selectize.config.annotation.SelectizeOptionLabel;
 import com.byteowls.vaadin.selectize.config.annotation.SelectizeOptionSearch;
@@ -14,6 +14,7 @@ import com.byteowls.vaadin.selectize.demo.ui.views.AbstractAddonView;
 import com.thedeanda.lorem.LoremIpsum;
 import com.vaadin.spring.annotation.SpringView;
 import com.vaadin.spring.annotation.UIScope;
+import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.FormLayout;
 import com.vaadin.ui.Panel;
@@ -41,15 +42,18 @@ public class FormLayoutLightView  extends AbstractAddonView {
         lastname.setNullRepresentation("");
         layout.addComponent(lastname);
         
-        SelectizeTypedListField<PersonEntity> smulti = new SelectizeTypedListField<>(PersonEntity.class, "Multi List");
-        smulti.config().plugins(Plugin.REMOVE_BUTTON).optionLabelGenerator(c -> { return c.getFirstname() + " " + c.getLastname() + " (" + c.getEmail() + ")"; }).options(getRandomOptions(10));
-        layout.addComponent(smulti);
-
-        SelectizeTypedField<PersonEntity> ssingle = new SelectizeTypedField<>(PersonEntity.class, "Single List");
-        ssingle.config().optionLabelGenerator(c -> { return c.getFirstname() + " " + c.getLastname(); }).options(getRandomOptions(10));
-        layout.addComponent(ssingle);
-        
         layout.addComponent(new TextArea("Notes"));
+        SelectizeTokenField<PersonEntity> tokenField = new SelectizeTokenField<>(PersonEntity.class, "Tokens");
+        tokenField.config().plugins(Plugin.REMOVE_BUTTON).placeholder("Choose multiple items").optionLabelGenerator(c -> { return c.getFirstname() + " (" + c.getEmail() + ")"; }).options(getRandomOptions(10));
+        layout.addComponent(tokenField);
+
+        SelectizeDropDownField<PersonEntity> dropDownField = new SelectizeDropDownField<>(PersonEntity.class, "Dropdown");
+        dropDownField.config().placeholder("Choose one item").optionLabelGenerator(c -> { return c.getFirstname() + " " + c.getLastname(); }).options(getRandomOptions(10));
+        layout.addComponent(dropDownField);
+        
+        
+        layout.addComponent(new ComboBox("Vaadin Combo"));
+        
         p.setContent(layout);
         return p;
     }

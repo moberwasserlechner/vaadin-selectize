@@ -7,14 +7,14 @@ import com.vaadin.data.Property;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.CustomField;
 
-public class SelectizeTypedListField<T> extends CustomField<List<T>> {
+public class SelectizeTokenField<T> extends CustomField<List<T>> {
 
     private static final long serialVersionUID = -2787759838519415740L;
 
     private Selectize<T> selectize;
     private Class<T> fieldType;
 
-    public SelectizeTypedListField(Class<T> fieldType) {
+    public SelectizeTokenField(Class<T> fieldType) {
         addStyleName("selectize-typed-list");
         this.fieldType = fieldType;
         this.selectize = new Selectize<>();
@@ -29,7 +29,7 @@ public class SelectizeTypedListField<T> extends CustomField<List<T>> {
         });
     }
 
-    public SelectizeTypedListField(Class<T> fieldType, String caption) {
+    public SelectizeTokenField(Class<T> fieldType, String caption) {
         this(fieldType);
         setCaption(caption);
     }

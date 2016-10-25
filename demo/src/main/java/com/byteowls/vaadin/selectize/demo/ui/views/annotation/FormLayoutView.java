@@ -3,8 +3,8 @@ package com.byteowls.vaadin.selectize.demo.ui.views.annotation;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.byteowls.vaadin.selectize.SelectizeTypedField;
-import com.byteowls.vaadin.selectize.SelectizeTypedListField;
+import com.byteowls.vaadin.selectize.SelectizeDropDownField;
+import com.byteowls.vaadin.selectize.SelectizeTokenField;
 import com.byteowls.vaadin.selectize.config.SelectizeConfig.Plugin;
 import com.byteowls.vaadin.selectize.config.annotation.SelectizeOptionLabel;
 import com.byteowls.vaadin.selectize.config.annotation.SelectizeOptionSearch;
@@ -40,11 +40,11 @@ public class FormLayoutView  extends AbstractAddonView {
         lastname.setNullRepresentation("");
         layout.addComponent(lastname);
         
-        SelectizeTypedListField<PersonEntity> smulti = new SelectizeTypedListField<>(PersonEntity.class, "Multi List");
+        SelectizeTokenField<PersonEntity> smulti = new SelectizeTokenField<>(PersonEntity.class, "Multi List");
         smulti.config().plugins(Plugin.REMOVE_BUTTON).optionLabelGenerator(c -> { return c.getFirstname() + " " + c.getLastname() + " (" + c.getEmail() + ")"; }).options(getRandomOptions(10));
         layout.addComponent(smulti);
 
-        SelectizeTypedField<PersonEntity> ssingle = new SelectizeTypedField<>(PersonEntity.class, "Single List");
+        SelectizeDropDownField<PersonEntity> ssingle = new SelectizeDropDownField<>(PersonEntity.class, "Single List");
         ssingle.config().optionLabelGenerator(c -> { return c.getFirstname() + " " + c.getLastname(); }).options(getRandomOptions(10));
         layout.addComponent(ssingle);
         
