@@ -50,7 +50,14 @@ window.com_byteowls_vaadin_selectize_Selectize = function() {
 				};
 			}
 			selectElement = $("<select>").appendTo(e).selectize(state.configurationJson);
+		}
 
+		if (selectElement != null) {
+			if (state.readOnly) {
+				selectElement[0].selectize.lock();
+			} else {
+				selectElement[0].selectize.unlock();
+			}
 		}
 	};
 

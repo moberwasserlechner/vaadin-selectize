@@ -17,6 +17,7 @@ import com.byteowls.vaadin.selectize.demo.ui.views.annotation.UpdateOptionsView;
 import com.byteowls.vaadin.selectize.demo.ui.views.annotation.ValueChangeListenerView;
 import com.byteowls.vaadin.selectize.demo.ui.views.annotation.FormLayoutLightView;
 import com.byteowls.vaadin.selectize.demo.ui.views.annotation.FormLayoutView;
+import com.byteowls.vaadin.selectize.demo.ui.views.annotation.ReadOnlyView;
 import com.byteowls.vaadin.selectize.demo.ui.views.contacts.MultipleCountryView;
 import com.byteowls.vaadin.selectize.demo.ui.views.contacts.SingleContactView;
 import com.byteowls.vaadin.selectize.demo.ui.views.contacts.SingleCountryView;
@@ -68,7 +69,7 @@ public class AddonDemoUI extends UI {
         menuItems.add(new MenuItem(MenuStructure.MULTIPLE, "Update/clear options", UpdateOptionsView.class));
         menuItems.add(new MenuItem(MenuStructure.MULTIPLE, "Update/clear items/selected", UpdateItemsView.class));
         menuItems.add(new MenuItem(MenuStructure.MULTIPLE, "On Blur", ValueChangeListenerView.class));
-        
+        menuItems.add(new MenuItem(MenuStructure.MULTIPLE, "Read Only", ReadOnlyView.class));
         menuItems.add(new MenuItem(MenuStructure.FORM, "Form", FormLayoutView.class));
         menuItems.add(new MenuItem(MenuStructure.FORM, "Light form", FormLayoutLightView.class));
     }
