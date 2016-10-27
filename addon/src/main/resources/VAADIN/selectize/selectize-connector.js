@@ -38,16 +38,19 @@ window.com_byteowls_vaadin_selectize_Selectize = function() {
 			if (loggingEnabled) {
 				console.log("selectize: configuration is\n", JSON.stringify(state.configurationJson, null, 2));
 			}
-			selectElement = $("<select>").appendTo(e).selectize(state.configurationJson);
-			if (selectElement[0].selectize.settings.maxItems == 1) {
-				selectElement[0].selectize.on("item_add", function(value) {
-					self.onBlurSelectize(value);
-				});
-			} else {
-				selectElement[0].selectize.on("blur", function() {
+
+			var selectizeConfig = state.configurationJson;
+			if (selectizeConfig.maxItems === null || selectizeConfig.maxItems > 1) {
+				selectizeConfig.onBlur = function() {
 					self.onBlurSelectize($(selectElement).val());
-				});
+				};
+			} else {
+				selectizeConfig.onChange = function(value) {
+					self.onBlurSelectize(value);
+				};
 			}
+			selectElement = $("<select>").appendTo(e).selectize(state.configurationJson);
+
 		}
 	};
 
@@ -73,7 +76,6 @@ window.com_byteowls_vaadin_selectize_Selectize = function() {
 			newItems.forEach(function(o) {
 				selectElement[0].selectize.addItem(o, true);
 			});
-			selectElement[0].selectize.refreshItems();
 		}
 	}
 

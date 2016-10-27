@@ -44,11 +44,18 @@ public class FormLayoutLightView  extends AbstractAddonView {
         
         layout.addComponent(new TextArea("Notes"));
         SelectizeTokenField<PersonEntity> tokenField = new SelectizeTokenField<>(PersonEntity.class, "Tokens");
-        tokenField.config().plugins(Plugin.REMOVE_BUTTON).placeholder("Choose multiple items").optionLabelGenerator(c -> { return c.getFirstname() + " (" + c.getEmail() + ")"; }).options(getRandomOptions(10));
+        tokenField.config()
+            .plugins(Plugin.REMOVE_BUTTON)
+            .placeholder("Choose multiple items")
+            .optionLabelGenerator(c -> { return c.getFirstname() + " (" + c.getEmail() + ")"; })
+            .options(getRandomOptions(10));
         layout.addComponent(tokenField);
 
         SelectizeDropDownField<PersonEntity> dropDownField = new SelectizeDropDownField<>(PersonEntity.class, "Dropdown");
-        dropDownField.config().placeholder("Choose one item").optionLabelGenerator(c -> { return c.getFirstname() + " " + c.getLastname(); }).options(getRandomOptions(10));
+        dropDownField.config()
+            .placeholder("Choose one item")
+            .optionLabelGenerator(c -> { return c.getFirstname() + " " + c.getLastname(); })
+            .options(getRandomOptions(10));
         layout.addComponent(dropDownField);
         
         
