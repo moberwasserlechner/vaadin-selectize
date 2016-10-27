@@ -11,9 +11,11 @@ Vaadin 7 wrapper for the Selectize.js jquery plugin. https://github.com/selectiz
  * @SelectizeOptionSort
  * @SelectizeOptionValue
 * Typed fields for both multi and single select
- * SelectizeTypedField ... Single select
- * SelectizeTypedListField ... Multi select, Token field
-* Fields fits nicely into Valo themed form layout with light styles
+ * SelectizeDropDownField ... Single select
+ * SelectizeTokenField ... Multi select, Token field
+* Both fields are fitting nicely into Valo themed form layout with light styles
+* Readonly supported
+* Buildin themes
 
 ## Demo
 
