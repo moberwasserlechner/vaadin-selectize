@@ -40,13 +40,22 @@ window.com_byteowls_vaadin_selectize_Selectize = function() {
 			}
 
 			var selectizeConfig = state.configurationJson;
-			if (selectizeConfig.maxItems === null || selectizeConfig.maxItems > 1) {
-				selectizeConfig.onBlur = function() {
-					self.onBlurSelectize($(selectElement).val());
-				};
-			} else {
-				selectizeConfig.onChange = function(value) {
-					self.onBlurSelectize(value);
+			if (state.hasValueChangeListeners) {
+				if (selectizeConfig.maxItems === null || selectizeConfig.maxItems > 1) {
+					selectizeConfig.onBlur = function() {
+						self.onSelectizeValueChange($(selectElement).val());
+					};
+				} else {
+					selectizeConfig.onChange = function(value) {
+						self.onSelectizeValueChange(value);
+					};
+				}
+			}
+
+			if (state.hasLazyLoadingListeners) {
+				selectizeConfig.load = function(filter, callback) {
+					if (!filter.length) { return callback(); }
+					self.onSelectizeLazyLoading(filter);
 				};
 			}
 			selectElement = $("<select>").appendTo(e).selectize(state.configurationJson);
@@ -61,9 +70,11 @@ window.com_byteowls_vaadin_selectize_Selectize = function() {
 		}
 	};
 
-	this.replaceOptions = function(newOptions) {
+	this.replaceOptions = function(newOptions, doClear) {
 		if (selectElement != null) {
-			this.clearOptions();
+			if (doClear) {
+				this.clearOptions();
+			}
 			newOptions.forEach(function(o) {
 				selectElement[0].selectize.addOption(o);
 			});

@@ -23,7 +23,13 @@ public class Selectize<T> extends AbstractJavaScriptComponent {
     public interface ValueChangeListener<T> extends Serializable {
         void valueChanged(List<T> items);
     }
+
+    public interface LazyLoadingListener<T> extends Serializable {
+        List<T> loadOptions(String filter);
+    }
+
     private List<ValueChangeListener<T>> valueChangeListeners = new ArrayList<>();
+    private List<LazyLoadingListener<T>> lazyLoadingListeners = new ArrayList<>();
 
     private SelectizeConfig<T> config;
 
@@ -61,6 +67,8 @@ public class Selectize<T> extends AbstractJavaScriptComponent {
     @Override
     public void attach() {
         if (config != null) {
+            getState().hasLazyLoadingListeners = (this.lazyLoadingListeners != null && !this.lazyLoadingListeners.isEmpty());
+            getState().hasValueChangeListeners = (this.valueChangeListeners != null && !this.valueChangeListeners.isEmpty());
             getState().configurationJson = config.buildJson();
         }
         super.attach();
@@ -84,12 +92,21 @@ public class Selectize<T> extends AbstractJavaScriptComponent {
 
     /**
      * Sets the given options and replaces any already existing ones. 
-     * @param options
      */
     public void replaceOptions(List<T> options) {
         SelectizeConfig<T> config = config().options(options);
         if (isAttached()) {
-            callFunction("replaceOptions", config.getOptionsJson());
+            callFunction("replaceOptions", config.getOptionsJson(), true);
+        }
+    }
+
+    /**
+     * Adds the given options to already existing ones. 
+     */
+    public void addOptions(List<T> options) {
+        SelectizeConfig<T> config = config().options(options);
+        if (isAttached()) {
+            callFunction("replaceOptions", config.getOptionsJson(), false);
         }
     }
 
@@ -126,7 +143,7 @@ public class Selectize<T> extends AbstractJavaScriptComponent {
 
 
     private void addJsFunctions() {
-        addFunction("onBlurSelectize", new JavaScriptFunction() {
+        addFunction("onSelectizeValueChange", new JavaScriptFunction() {
             private static final long serialVersionUID = -7865596041611535165L;
 
             @Override
@@ -171,6 +188,26 @@ public class Selectize<T> extends AbstractJavaScriptComponent {
 
             }
         });
+
+        addFunction("onSelectizeLazyLoading", new JavaScriptFunction() {
+            private static final long serialVersionUID = 2548790968137988000L;
+            @Override
+            public void call(JsonArray args) {
+                String filter = args.getString(0);
+                List<T> allOptions = new ArrayList<>();
+                for (LazyLoadingListener<T> l : lazyLoadingListeners) {
+                    List<T> options = l.loadOptions(filter);
+                    if (options != null) {
+                        allOptions.addAll(options);
+                    }
+                }
+
+                if (!allOptions.isEmpty()) {
+                    addOptions(allOptions);
+                }
+
+            }
+        });
     }
 
     private Object convertString(Class<?> valueClass, String stringValue) {
@@ -190,11 +227,17 @@ public class Selectize<T> extends AbstractJavaScriptComponent {
     }
 
     /**
-     * Add a listener to handle the changed value from the editor.
-     * @param listener a simple blurlistener retrieving just the value
+     * Add a listener to handle changed values at the server side.
      */
     public void addValueChangeListener(ValueChangeListener<T> listener) {
         this.valueChangeListeners.add(listener);
+    }
+
+    /**
+     * Add a listener to handle lazy server side loading
+     */
+    public void addLazyLoadingListener(LazyLoadingListener<T> listener) {
+        this.lazyLoadingListeners.add(listener);
     }
 
     @Override

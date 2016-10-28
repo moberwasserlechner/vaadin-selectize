@@ -11,5 +11,7 @@ public class SelectizeState extends JavaScriptComponentState {
     public boolean loggingEnabled;
     public SelectizeTheme theme = SelectizeTheme.VALO;
     public JsonValue configurationJson;
+    public boolean hasValueChangeListeners;
+    public boolean hasLazyLoadingListeners;
 
 }
