@@ -28,8 +28,13 @@ public class Selectize<T> extends AbstractJavaScriptComponent {
         List<T> loadOptions(String filter);
     }
 
+    public interface OptionCreateListener<T> extends Serializable {
+        void createOption(T newOption);
+    }
+
     private List<ValueChangeListener<T>> valueChangeListeners = new ArrayList<>();
     private List<LazyLoadingListener<T>> lazyLoadingListeners = new ArrayList<>();
+    private List<OptionCreateListener<T>> optionCreateListeners = new ArrayList<>();
 
     private SelectizeConfig<T> config;
 
@@ -69,6 +74,7 @@ public class Selectize<T> extends AbstractJavaScriptComponent {
         if (config != null) {
             getState().hasLazyLoadingListeners = (this.lazyLoadingListeners != null && !this.lazyLoadingListeners.isEmpty());
             getState().hasValueChangeListeners = (this.valueChangeListeners != null && !this.valueChangeListeners.isEmpty());
+            getState().hasOptionCreateListeners = (this.optionCreateListeners != null && !this.optionCreateListeners.isEmpty());
             getState().configurationJson = config.buildJson();
         }
         super.attach();
@@ -89,24 +95,43 @@ public class Selectize<T> extends AbstractJavaScriptComponent {
         getState().loggingEnabled = jsLoggingEnabled;
     }
 
-
     /**
      * Sets the given options and replaces any already existing ones. 
      */
     public void replaceOptions(List<T> options) {
+        replaceOptions(options, false);
+    }
+
+    /**
+     * Sets the given options and replaces any already existing ones. 
+     */
+    public void replaceOptions(List<T> options, boolean triggerDropdown) {
         SelectizeConfig<T> config = config().options(options);
         if (isAttached()) {
-            callFunction("replaceOptions", config.getOptionsJson(), true);
+            callFunction("replaceOptions", config.getOptionsJson(), triggerDropdown);
         }
+    }
+
+
+    /**
+     * Adds the given options to already existing ones.
+     * @param options
+     */
+    public void addOptions(List<T> options) {
+        addOptions(options, false);
     }
 
     /**
      * Adds the given options to already existing ones. 
+     * @param options
+     * @param triggerDropdown If true the option drop down is opened.
      */
-    public void addOptions(List<T> options) {
-        SelectizeConfig<T> config = config().options(options);
+    public void addOptions(List<T> options, boolean triggerDropdown) {
+        for (T o : options) {
+            config().option(o);
+        }
         if (isAttached()) {
-            callFunction("replaceOptions", config.getOptionsJson(), false);
+            callFunction("addOptions", config().getOptionsJson(options), triggerDropdown);
         }
     }
 
@@ -122,6 +147,14 @@ public class Selectize<T> extends AbstractJavaScriptComponent {
 
     public void replaceItem(T item) {
         SelectizeConfig<T> config = config().clearItems().item(item);
+        if (item != null) {
+            List<T> options = config().getOptions();
+            if (options == null || !options.contains(item)) {
+                ArrayList<T> helper = new ArrayList<>();
+                helper.add(item);
+                addOptions(helper);
+            }
+        }
         if (isAttached()) {
             callFunction("replaceItems", config.getItemsJson());
         }
@@ -138,6 +171,12 @@ public class Selectize<T> extends AbstractJavaScriptComponent {
         config().clearItems();
         if (isAttached()) {
             callFunction("clearItems");
+        }
+    }
+
+    public void addItems(List<T> items) {
+        for (T i : items) {
+            config().item(i);
         }
     }
 
@@ -203,9 +242,29 @@ public class Selectize<T> extends AbstractJavaScriptComponent {
                 }
 
                 if (!allOptions.isEmpty()) {
-                    addOptions(allOptions);
+                    addOptions(allOptions, true);
                 }
 
+            }
+        });
+
+        addFunction("onSelectizeOptionCreate", new JavaScriptFunction() {
+            private static final long serialVersionUID = 6245727067365295299L;
+
+            @Override
+            public void call(JsonArray args) {
+                String input = args.getString(0);
+                T newOption = config().createOptionWithLabel(input);
+                for (OptionCreateListener<T> l : optionCreateListeners) {
+                    // fill the option
+                    l.createOption(newOption);
+                }
+                // filled option should be send to the client side
+                config().option(newOption);
+                List<T> list = new ArrayList<>();
+                list.add(newOption);
+                addOptions(list);
+                addItems(list);
             }
         });
     }
@@ -238,6 +297,13 @@ public class Selectize<T> extends AbstractJavaScriptComponent {
      */
     public void addLazyLoadingListener(LazyLoadingListener<T> listener) {
         this.lazyLoadingListeners.add(listener);
+    }
+
+    /**
+     * Add a listener to handle adding new options
+     */
+    public void addOptionCreateListener(OptionCreateListener<T> listener) {
+        this.optionCreateListeners.add(listener);
     }
 
     @Override

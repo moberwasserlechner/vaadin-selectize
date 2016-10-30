@@ -58,6 +58,16 @@ window.com_byteowls_vaadin_selectize_Selectize = function() {
 					self.onSelectizeLazyLoading(filter);
 				};
 			}
+
+			if (state.hasOptionCreateListeners) {
+				selectizeConfig.create = function(input) {
+					if (input.length) {
+						self.onSelectizeOptionCreate(input);
+					}
+					return null;
+				};
+			}
+
 			selectElement = $("<select>").appendTo(e).selectize(state.configurationJson);
 		}
 
@@ -70,15 +80,17 @@ window.com_byteowls_vaadin_selectize_Selectize = function() {
 		}
 	};
 
-	this.replaceOptions = function(newOptions, doClear) {
+	this.replaceOptions = function(newOptions, triggerDropdown) {
+		this.clearOptions();
+		this.addOptions(newOptions, triggerDropdown)
+	}
+
+	this.addOptions = function(newOptions, triggerDropdown) {
 		if (selectElement != null) {
-			if (doClear) {
-				this.clearOptions();
-			}
 			newOptions.forEach(function(o) {
 				selectElement[0].selectize.addOption(o);
 			});
-			selectElement[0].selectize.refreshOptions(false);
+			selectElement[0].selectize.refreshOptions(triggerDropdown);
 		}
 	}
 
@@ -89,10 +101,15 @@ window.com_byteowls_vaadin_selectize_Selectize = function() {
 	}
 
 	this.replaceItems = function(newItems) {
+		this.clearItems();
+		this.addItems(newItems, true);
+	}
+
+	this.addItems = function(newItems, silent) {
 		if (selectElement != null) {
-			this.clearItems();
+			silent = (typeof silent !== 'undefined' ? silent : true);
 			newItems.forEach(function(o) {
-				selectElement[0].selectize.addItem(o, true);
+				selectElement[0].selectize.addItem(o, silent);
 			});
 		}
 	}

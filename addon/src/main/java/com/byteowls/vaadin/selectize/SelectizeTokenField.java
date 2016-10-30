@@ -2,6 +2,8 @@ package com.byteowls.vaadin.selectize;
 
 import java.util.List;
 
+import com.byteowls.vaadin.selectize.Selectize.LazyLoadingListener;
+import com.byteowls.vaadin.selectize.Selectize.OptionCreateListener;
 import com.byteowls.vaadin.selectize.config.SelectizeConfig;
 import com.vaadin.data.Property;
 import com.vaadin.ui.Component;
@@ -70,6 +72,20 @@ public class SelectizeTokenField<T> extends CustomField<List<T>> {
 
     public void clearItems() {
         selectize.clearItems();
+    }
+
+    /**
+     * Add a listener to handle lazy server side loading
+     */
+    public void addLazyLoadingListener(LazyLoadingListener<T> listener) {
+        this.selectize.addLazyLoadingListener(listener);
+    }
+
+    /**
+     * Add a listener to handle adding new options
+     */
+    public void addOptionCreateListener(OptionCreateListener<T> listener) {
+        this.selectize.addOptionCreateListener(listener);
     }
 
     @SuppressWarnings({ "rawtypes", "unchecked" })

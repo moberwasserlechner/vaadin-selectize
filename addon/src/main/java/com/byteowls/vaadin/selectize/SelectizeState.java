@@ -13,5 +13,6 @@ public class SelectizeState extends JavaScriptComponentState {
     public JsonValue configurationJson;
     public boolean hasValueChangeListeners;
     public boolean hasLazyLoadingListeners;
+    public boolean hasOptionCreateListeners;
 
 }

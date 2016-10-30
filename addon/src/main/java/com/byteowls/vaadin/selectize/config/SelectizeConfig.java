@@ -45,7 +45,6 @@ public class SelectizeConfig<T> implements JsonBuilder {
 
     // general
     private String delimiter;
-    private Boolean create;
     private Boolean createOnBlur;
     private String createFilter;
     private Boolean highlight;
@@ -120,7 +119,9 @@ public class SelectizeConfig<T> implements JsonBuilder {
             if (this.options == null) {
                 this.options = new ArrayList<>();
             }
-            this.options.add(optionBean);
+            if (!this.options.contains(optionBean)) {
+                this.options.add(optionBean);
+            }
         }
         return this;
     }
@@ -190,36 +191,25 @@ public class SelectizeConfig<T> implements JsonBuilder {
         return this;
     }
 
-    //TODO #2 create option depends on create callback. therefore config methods removed.
-    //    /**
-    //     * Allows the user to create new items that aren't in the initial list of options. Defaults to false.
-    //     * @param create
-    //     * @return This for chaining.
-    //     */
-    //    public SelectizeConfig<T> create(boolean create) {
-    //        this.create = create;
-    //        return this;
-    //    }
-    //
-    //    /**
-    //     * If true, when user exits the field (clicks outside of input), a new option is created and selected (if create setting is enabled). Defaults to false.
-    //     * @param createOnBlur
-    //     * @return This for chaining.
-    //     */
-    //    public SelectizeConfig<T> createOnBlur(boolean createOnBlur) {
-    //        this.createOnBlur = createOnBlur;
-    //        return this;
-    //    }
-    //
-    //    /**
-    //     * Specifies a RegExp or a string containing a regular expression that the current search filter must match to be allowed to be created.
-    //     * @param createFilter
-    //     * @return This for chaining.
-    //     */
-    //    public SelectizeConfig<T> createFilter(String createFilter) {
-    //        this.createFilter = createFilter;
-    //        return this;
-    //    }
+    /**
+     * If true, when user exits the field (clicks outside of input), a new option is created and selected (if create setting is enabled). Defaults to false.
+     * @param createOnBlur
+     * @return This for chaining.
+     */
+    public SelectizeConfig<T> createOnBlur(boolean createOnBlur) {
+        this.createOnBlur = createOnBlur;
+        return this;
+    }
+
+    /**
+     * Specifies a RegExp or a string containing a regular expression that the current search filter must match to be allowed to be created.
+     * @param createFilter
+     * @return This for chaining.
+     */
+    public SelectizeConfig<T> createFilter(String createFilter) {
+        this.createFilter = createFilter;
+        return this;
+    }
 
     /**
      * Toggles match highlighting within the dropdown menu. Defaults to true.
@@ -710,7 +700,7 @@ public class SelectizeConfig<T> implements JsonBuilder {
             Field valueField = null;
             for (T o : this.items) {
                 if (valueField == null) {
-                    valueField = getValueReflectField(o.getClass(), valueFieldName);
+                    valueField = getFieldByName(o.getClass(), valueFieldName);
                 }
 
                 boolean accessible = valueField.isAccessible();
@@ -738,27 +728,42 @@ public class SelectizeConfig<T> implements JsonBuilder {
         return arr;
     }
 
-    public Field getValueReflectField(Class<?> clazz, String valueFieldName) {
-        Field valueField = null;
-        Class<?> i = clazz;
-        while (i != null && i != Object.class) {
-            if (valueField != null) {
+    public Field getFieldByName(String name) {
+        Class<?> clazz = this.getOptionsClass();
+        if (clazz == null && this.options != null) {
+            for (T o : this.options) {
+                clazz = o.getClass();
                 break;
             }
-            for (Field field : i.getDeclaredFields()) {
-                if (valueFieldName.equals(field.getName())) {
-                    valueField = field;
+        }
+        return getFieldByName(clazz, name);
+    }
+
+    public Field getFieldByName(Class<?> clazz, String name) {
+        Field field = null;
+        Class<?> i = clazz;
+        while (i != null && i != Object.class) {
+            if (field != null) {
+                break;
+            }
+            for (Field f : i.getDeclaredFields()) {
+                if (name.equals(f.getName())) {
+                    field = f;
                     break;
                 }
             }
             i = i.getSuperclass();
         }
-        return valueField;
+        return field;
     }
 
     public JsonArray getOptionsJson() {
+        return getOptionsJson(this.options);
+    }
+
+    public JsonArray getOptionsJson(List<T> options) {
         JsonArray arr = Json.createArray();
-        if (this.options != null) {
+        if (options != null) {
             List<Field> fields = new ArrayList<>();
             Set<String> constrainToFields = new HashSet<>();
             if (this.useOnlyConfiguredFields) {
@@ -779,7 +784,7 @@ public class SelectizeConfig<T> implements JsonBuilder {
                 }
             }
 
-            for (T o : this.options) {
+            for (T o : options) {
                 if (fields.isEmpty()) {
                     Class<?> i = o.getClass();
                     while (i != null && i != Object.class) {
@@ -841,12 +846,8 @@ public class SelectizeConfig<T> implements JsonBuilder {
                 valueFieldName = DEFAULT_VALUE_FIELD;
             }
 
-            Field valueField = null;
+            Field valueField = getFieldByName(valueFieldName);
             for (T o : this.options) {
-                if (valueField == null) {
-                    valueField = getValueReflectField(o.getClass(), valueFieldName);
-                }
-
                 try {
                     boolean accessible = valueField.isAccessible();
                     if (!accessible) {
@@ -872,10 +873,8 @@ public class SelectizeConfig<T> implements JsonBuilder {
         resolveAnnotations();
         JsonObject map = Json.createObject();
         JUtils.putNotNull(map, "delimiter", delimiter);
-        // TODO #2 create callback
-        //        JUtils.putNotNull(map, "create", create);
-        //        JUtils.putNotNull(map, "createOnBlur", createOnBlur);
-        //        JUtils.putNotNull(map, "createFilter", createFilter);
+        JUtils.putNotNull(map, "createOnBlur", createOnBlur);
+        JUtils.putNotNull(map, "createFilter", createFilter);
         JUtils.putNotNull(map, "highlight", highlight);
         JUtils.putNotNull(map, "persist", persist);
         JUtils.putNotNull(map, "openOnFocus", openOnFocus);
@@ -950,10 +949,6 @@ public class SelectizeConfig<T> implements JsonBuilder {
 
     public String getDelimiter() {
         return delimiter;
-    }
-
-    public Boolean getCreate() {
-        return create;
     }
 
     public Boolean getCreateOnBlur() {
@@ -1078,6 +1073,21 @@ public class SelectizeConfig<T> implements JsonBuilder {
 
     public Set<String> getPlugins() {
         return plugins;
+    }
+
+    public T createOptionWithLabel(String input) {
+        try {
+            T newOption = getOptionsClass().newInstance();
+            Field labelField = getFieldByName(getLabelField());
+            if (labelField != null) {
+                labelField.setAccessible(true);
+                labelField.set(newOption, input);
+            }
+            return newOption;
+        } catch (Exception e) {
+
+        }
+        return null;
     }
 
 }
