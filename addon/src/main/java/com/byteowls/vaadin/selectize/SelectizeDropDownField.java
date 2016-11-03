@@ -95,5 +95,13 @@ public class SelectizeDropDownField<T> extends CustomField<T> {
     public Class<? extends T> getType() {
         return fieldType;
     }
+    
+    /**
+     * Enable or disables the connector's logging to "console.log"
+     * @param jsLoggingEnabled If true the connector script will log defined messages to "console.log". Defaults to false. 
+     */
+    public void setJsLoggingEnabled(boolean jsLoggingEnabled) {
+        this.selectize.setJsLoggingEnabled(jsLoggingEnabled);
+    }
 
 }

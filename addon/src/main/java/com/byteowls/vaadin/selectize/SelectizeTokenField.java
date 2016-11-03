@@ -93,5 +93,13 @@ public class SelectizeTokenField<T> extends CustomField<List<T>> {
     public Class<? extends List<T>> getType() {
         return (Class) List.class;
     }
+    
+    /**
+     * Enable or disables the connector's logging to "console.log"
+     * @param jsLoggingEnabled If true the connector script will log defined messages to "console.log". Defaults to false. 
+     */
+    public void setJsLoggingEnabled(boolean jsLoggingEnabled) {
+        this.selectize.setJsLoggingEnabled(jsLoggingEnabled);
+    }
 
 }
