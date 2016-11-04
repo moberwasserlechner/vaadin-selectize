@@ -18,7 +18,7 @@ window.com_byteowls_vaadin_selectize_Selectize = function() {
 		if (loggingEnabled) {
 			console.log("selectize: accessing onStateChange the "+stateChangedCnt+". time");
 		}
-		
+
 		// theme
 		if (typeof themeLink === 'undefined') {
 			// check if a theme css is already loaded
@@ -40,33 +40,35 @@ window.com_byteowls_vaadin_selectize_Selectize = function() {
 			}
 
 			var selectizeConfig = state.configurationJson;
-			if (state.hasValueChangeListeners) {
-				if (selectizeConfig.maxItems === null || selectizeConfig.maxItems > 1) {
-					selectizeConfig.onBlur = function() {
-						self.onSelectizeValueChange($(selectElement).val());
-					};
-				} else {
-					selectizeConfig.onChange = function(value) {
-						self.onSelectizeValueChange(value);
+			if (!state.readOnly) {
+				if (state.hasValueChangeListeners) {
+					if (selectizeConfig.maxItems === null || selectizeConfig.maxItems > 1) {
+						selectizeConfig.onBlur = function() {
+							self.onSelectizeValueChange($(selectElement).val());
+						};
+					} else {
+						selectizeConfig.onChange = function(value) {
+							self.onSelectizeValueChange(value);
+						};
+					}
+				}
+
+				if (state.hasLazyLoadingListeners) {
+					selectizeConfig.load = function(filter, callback) {
+						if (!filter.length) { return callback(); }
+						self.onSelectizeLazyLoading(filter);
 					};
 				}
-			}
 
-			if (state.hasLazyLoadingListeners) {
-				selectizeConfig.load = function(filter, callback) {
-					if (!filter.length) { return callback(); }
-					self.onSelectizeLazyLoading(filter);
-				};
-			}
-
-			if (state.hasOptionCreateListeners) {
-				selectizeConfig.create = function(input) {
-					if (input.length) {
-						self.onSelectizeOptionCreate(input);
-					}
-					return null;
-				};
-			}
+				if (state.hasOptionCreateListeners) {
+					selectizeConfig.create = function(input) {
+						if (input.length) {
+							self.onSelectizeOptionCreate(input);
+						}
+						return null;
+					};
+				}
+			} // !readonly
 
 			selectElement = $("<select>").appendTo(e).selectize(state.configurationJson);
 		}

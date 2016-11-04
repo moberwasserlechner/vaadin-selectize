@@ -25,10 +25,12 @@ public class SelectizeDropDownField<T> extends CustomField<T> {
             private static final long serialVersionUID = 3565961306222180148L;
             @Override
             public void valueChanged(List<T> items) {
-                if (items != null && !items.isEmpty()) {
-                    setValue(items.get(0));
-                } else {
-                    setValue(null);
+                if (!selectize.isReadOnly()) {
+                    if (items != null && !items.isEmpty()) {
+                        setValue(items.get(0));
+                    } else {
+                        setValue(null);
+                    }
                 }
             }
         });
@@ -95,7 +97,7 @@ public class SelectizeDropDownField<T> extends CustomField<T> {
     public Class<? extends T> getType() {
         return fieldType;
     }
-    
+
     /**
      * Enable or disables the connector's logging to "console.log"
      * @param jsLoggingEnabled If true the connector script will log defined messages to "console.log". Defaults to false. 
