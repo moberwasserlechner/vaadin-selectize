@@ -6,6 +6,7 @@ import com.byteowls.vaadin.selectize.Selectize.LazyLoadingListener;
 import com.byteowls.vaadin.selectize.Selectize.OptionCreateListener;
 import com.byteowls.vaadin.selectize.config.SelectizeConfig;
 import com.vaadin.data.Property;
+import com.vaadin.data.util.converter.Converter.ConversionException;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.CustomField;
 
@@ -104,6 +105,12 @@ public class SelectizeDropDownField<T> extends CustomField<T> {
      */
     public void setJsLoggingEnabled(boolean jsLoggingEnabled) {
         this.selectize.setJsLoggingEnabled(jsLoggingEnabled);
+    }
+
+    @Override
+    public void setValue(T newFieldValue) throws com.vaadin.data.Property.ReadOnlyException, ConversionException {
+        super.setValue(newFieldValue);
+        selectize.replaceItem(newFieldValue);
     }
 
 }
