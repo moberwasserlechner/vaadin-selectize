@@ -30,10 +30,14 @@ repositories {
 
 dependencies {
     compile("com.vaadin:vaadin-spring-boot-starter:${vaadinSpringVersion}")
+
+    compile("org.springframework.boot:spring-boot-starter-undertow:${springBootVersion}")
+
     compile project(":addon")
     compile ("de.java2html:java2html:5.0")
-    providedRuntime("org.springframework.boot:spring-boot-starter-tomcat")
+
     testCompile('org.springframework.boot:spring-boot-starter-test')
+
     compile ("com.thedeanda:lorem:2.1")
 
     compile ("com.vaadin:vaadin-server:${vaadinVersion}")
