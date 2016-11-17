@@ -21,7 +21,7 @@ Vaadin 7 wrapper for the Selectize.js jquery plugin. https://github.com/selectiz
 
 ### Vaadin Addon
 
-* http://moberwasserlechner.jelastic.servint.net/vaadin-selectize/
+* http://vaadin-demos.qqjtxeeuih.eu-central-1.elasticbeanstalk.com/selectizejs/
 
 If you want to run the demo application locally, see the [Contribution Section](#run-the-demo-local)
 
@@ -64,7 +64,7 @@ Dependency
       <dependency>
         <groupId>com.byteowls</groupId>
         <artifactId>vaadin-selectize</artifactId>
-        <version>0.1.0</version>
+        <version>0.2.0</version>
       </dependency>
     </dependencies>
 
@@ -80,14 +80,68 @@ Repository
 Dependency
 
     dependencies {
-      compile ("com.byteowls:vaadin-selectize:0.1.0")
+      compile ("com.byteowls:vaadin-selectize:0.2.0")
     }
 ## Usage
 
-For more examples please see the demo app at http://moberwasserlechner.jelastic.servint.net/vaadin-selectize/
+For more examples please see the [demo app](#vaadin-addon)
 
 ```
-TODO
+
+    public void buildField() {
+        SelectizeTokenField<PersonEntity> tokenField = new SelectizeTokenField<>(PersonEntity.class, "Tokens");
+        tokenField.config()
+            .plugins(Plugin.REMOVE_BUTTON)
+            .placeholder("Choose multiple items")
+            .optionLabelGenerator(c -> { return c.getFirstname() + " (" + c.getEmail() + ")"; })
+            .options(getRandomOptions(10));
+    }
+
+    public abstract class AbstractIdEntity {
+
+        @SelectizeOptionValue
+        private String id;
+
+        public AbstractIdEntity(String id) {
+            super();
+            this.id = id;
+        }
+
+        public String getId() {
+            return id;
+        }
+    }
+
+    public class PersonEntity extends AbstractIdEntity {
+        @SelectizeOptionSearch
+        @SelectizeOptionSort(order = 2)
+        private String firstname;
+        @SelectizeOptionSort(asc = false, order = 1)
+        private String lastname;
+        @SelectizeOptionLabel
+        private String email;
+
+        public PersonEntity(String id, String firstname, String lastname, String email) {
+            super(id);
+            this.firstname = firstname;
+            this.lastname = lastname;
+            this.email = email;
+        }
+        public String getFirstname() {
+            return firstname;
+        }
+        public String getLastname() {
+            return lastname;
+        }
+        public String getEmail() {
+            return email;
+        }
+        @Override
+        public String toString() {
+            return "PersonEntity [firstname=" + firstname + ", lastname=" + lastname + ", email=" + email + "]";
+        }
+    }
+
 ```
 
 ### Options
@@ -97,12 +151,12 @@ You will see that every fluent api method under `selectize.config()` has a count
 ## Prerequisite
 
 ### Addon
-* JDK 7 or higher
+* JDK 8
 * Vaadin 7.4 or higher
 
 ### Demo
-* JDK 8 (because of Lambdas)
-* Vaadin 7.7.0+
+* JDK 8
+* Vaadin 7.7.+
 
 
 ## Missing something?
